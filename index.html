@@ -4,606 +4,109 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Mapa das Folhas</title>
-  
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Google Fonts: Plus Jakarta Sans -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
   <style>
     :root {
-      --bg-dark: #121315;
-      --card-bg: #ffffff;
-      --text-main: #111215;
-      --text-muted: #737882;
-      --input-bg: #f3f4f6;
-      --border-soft: #e5e7eb;
-      --accent-lime: #cbf30e; /* Verde limão vibrante do design */
-      --accent-lime-hover: #b9de0b;
-      --accent-dark: #1e2024;
-      --danger-bg: #fee2e2;
-      --danger-text: #dc2626;
-      --radius-pill: 9999px;
-      --radius-card: 32px;
-      --radius-input: 24px;
+      --bg: #121316;
+      --card: #ffffff;
+      --text: #111215;
+      --muted: #64748b;
+      --input: #f1f5f9;
+      --lime: #cbf30e;
+      --red-bg: #fee2e2;
+      --red-txt: #dc2626;
+      --pill: 9999px;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    /* Topo Flutuante / Header Minimalista */
-    .top-float-bar {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      right: 14px;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      pointer-events: none;
-    }
-
-    .top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      pointer-events: auto;
-    }
-
-    .brand-pill {
-      background: rgba(18, 19, 21, 0.85);
-      backdrop-filter: blur(12px);
-      padding: 8px 18px;
-      border-radius: var(--radius-pill);
-      color: #fff;
-      font-weight: 800;
-      font-size: 0.9rem;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .count-badge {
-      background: var(--accent-lime);
-      color: #000;
-      font-size: 0.72rem;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-weight: 800;
-    }
-
-    .search-wrapper {
-      pointer-events: auto;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      border-radius: var(--radius-pill);
-      padding: 6px 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-    }
-
-    .search-wrapper input {
-      border: none;
-      background: transparent;
-      outline: none;
-      width: 100%;
-      font-family: inherit;
-      font-size: 0.9rem;
-      color: var(--text-main);
-      font-weight: 500;
-    }
-
-    .pills-scroll {
-      pointer-events: auto;
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .pills-scroll::-webkit-scrollbar { display: none; }
-
-    .filter-chip {
-      background: rgba(18, 19, 21, 0.82);
-      backdrop-filter: blur(8px);
-      color: #fff;
-      padding: 6px 16px;
-      border-radius: var(--radius-pill);
-      font-size: 0.78rem;
-      font-weight: 600;
-      white-space: nowrap;
-      cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.12);
-      transition: all 0.2s;
-    }
-
-    .filter-chip.active {
-      background: var(--accent-lime);
-      color: #000;
-      border-color: var(--accent-lime);
-      font-weight: 800;
-    }
-
-    /* Container Mapa */
-    main {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #map {
-      width: 100%;
-      height: 100%;
-      background: #0f1012;
-    }
-
-    /* Botão Flutuante Circular GPS */
-    .btn-circle-gps {
-      position: absolute;
-      right: 18px;
-      bottom: 96px;
-      z-index: 800;
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: #ffffff;
-      border: none;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.22);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      cursor: pointer;
-      transition: transform 0.15s;
-    }
-
-    .btn-circle-gps:active { transform: scale(0.92); }
-
-    /* Barra de Navegação Inferior Flutuante */
-    .bottom-nav {
-      position: absolute;
-      bottom: 16px;
-      left: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(16px);
-      border-radius: var(--radius-pill);
-      padding: 8px 14px;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 900;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.28);
-    }
-
-    .nav-tab {
-      background: none;
-      border: none;
-      padding: 6px 14px;
-      font-family: inherit;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: var(--radius-pill);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-    }
-
-    .nav-tab.active {
-      color: var(--text-main);
-      background: var(--input-bg);
-      font-weight: 700;
-    }
-
-    .nav-add-btn {
-      background: var(--accent-lime);
-      color: #000;
-      border: none;
-      height: 48px;
-      padding: 0 22px;
-      border-radius: var(--radius-pill);
-      font-size: 0.92rem;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 4px 14px rgba(203, 243, 14, 0.4);
-      transition: transform 0.15s, background 0.15s;
-    }
-
-    .nav-add-btn:active {
-      transform: scale(0.95);
-      background: var(--accent-lime-hover);
-    }
-
-    /* Modal / Bottom Sheet Style */
-    .sheet-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(4px);
-      z-index: 2000;
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    .top-bar { position: absolute; top: 10px; left: 12px; right: 12px; z-index: 1000; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+    .brand-pill { pointer-events: auto; background: rgba(18,19,22,0.92); padding: 6px 14px; border-radius: var(--pill); color: #fff; font-weight: 800; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px; width: fit-content; border: 1px solid rgba(255,255,255,0.15); }
+    .badge-count { background: var(--lime); color: #000; font-size: 0.7rem; padding: 2px 7px; border-radius: 10px; font-weight: 800; }
+    .search-box { pointer-events: auto; background: #fff; border-radius: var(--pill); padding: 7px 14px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.25); }
+    .search-box input { border: none; outline: none; width: 100%; font-size: 0.86rem; font-weight: 600; color: var(--text); }
+    .filter-row { pointer-events: auto; display: flex; gap: 6px; overflow-x: auto; }
+    .filter-chip { background: rgba(18,19,22,0.85); color: #fff; padding: 5px 12px; border-radius: var(--pill); font-size: 0.72rem; font-weight: 700; white-space: nowrap; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+    .filter-chip.active { background: var(--lime); color: #000; font-weight: 800; }
+    
+    main { flex: 1; position: relative; }
+    #map { width: 100%; height: 100%; }
+    .btn-gps { position: absolute; right: 14px; bottom: 82px; z-index: 800; width: 46px; height: 46px; border-radius: 50%; background: #fff; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    
+    .bottom-nav { position: absolute; bottom: 12px; left: 14px; right: 14px; background: rgba(255,255,255,0.96); border-radius: var(--pill); padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; z-index: 900; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+    .nav-tab { background: none; border: none; padding: 8px 12px; font-size: 0.78rem; font-weight: 700; color: var(--muted); cursor: pointer; border-radius: var(--pill); }
+    .nav-tab.active { color: #000; background: var(--input); }
+    .nav-add-btn { background: var(--lime); color: #000; border: none; padding: 10px 18px; border-radius: var(--pill); font-size: 0.88rem; font-weight: 800; cursor: pointer; }
+    
+    .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: flex-end; justify-content: center; }
     .sheet-overlay.active { display: flex; }
-
-    .bottom-sheet {
-      background: var(--card-bg);
-      width: 100%;
-      max-width: 520px;
-      border-radius: var(--radius-card) var(--radius-card) 0 0;
-      padding: 16px 22px 28px;
-      max-height: 88vh;
-      overflow-y: auto;
-      box-shadow: 0 -12px 36px rgba(0,0,0,0.25);
-      animation: sheetUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes sheetUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-
-    .drag-indicator {
-      width: 44px;
-      height: 5px;
-      background: #e2e4e8;
-      border-radius: var(--radius-pill);
-      margin: 0 auto 16px;
-    }
-
-    .sheet-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
-
-    .sheet-title {
-      font-size: 1.35rem;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-    }
-
-    .circle-close {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: none;
-      background: var(--input-bg);
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-    }
-
-    /* Inputs e Controles Ultra-Arredondados */
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .field-label {
-      font-size: 0.8rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-      display: block;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .clean-input {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1.5px solid transparent;
-      border-radius: var(--radius-input);
-      padding: 14px 18px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      color: var(--text-main);
-      font-weight: 600;
-      outline: none;
-      transition: all 0.2s;
-    }
-
-    .clean-input:focus {
-      background: #fff;
-      border-color: #000;
-    }
-
-    .clean-input::placeholder {
-      color: #9ca3af;
-      font-weight: 400;
-    }
-
-    /* Alternador de Modo de Localização (GPS vs Endereço) */
-    .loc-toggle-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: var(--input-bg);
-      border-radius: var(--radius-pill);
-      padding: 4px;
-      gap: 4px;
-      margin-bottom: 10px;
-    }
-
-    .loc-tab-btn {
-      border: none;
-      background: transparent;
-      padding: 10px;
-      border-radius: var(--radius-pill);
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .loc-tab-btn.active {
-      background: #fff;
-      color: #000;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-
-    .loc-box-content {
-      background: #fafafa;
-      border: 1px dashed var(--border-soft);
-      border-radius: 20px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    /* Tipo de Retirada Cards */
-    .badge-choice-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .badge-choice-card {
-      background: var(--input-bg);
-      border-radius: 20px;
-      padding: 12px;
-      text-align: center;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: all 0.2s;
-    }
-
-    .badge-choice-card.selected {
-      border-color: #000;
-      background: #fff;
-    }
-
-    /* Área da Foto Clean */
-    .photo-drop-box {
-      position: relative;
-      width: 100%;
-      height: 140px;
-      border-radius: 22px;
-      background: var(--input-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      cursor: pointer;
-      border: 2px dashed #d1d5db;
-    }
-
-    .photo-drop-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* Botão Principal Estilo "Continue" */
-    .btn-action-primary {
-      width: 100%;
-      background: var(--accent-lime);
-      color: #000;
-      border: none;
-      padding: 16px;
-      border-radius: var(--radius-pill);
-      font-size: 1rem;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 16px rgba(203, 243, 14, 0.4);
-      margin-top: 10px;
-      transition: transform 0.15s, background 0.15s;
-    }
-
-    .btn-action-primary:active {
-      transform: scale(0.98);
-      background: var(--accent-lime-hover);
-    }
-
-    .btn-action-delete {
-      width: 100%;
-      background: var(--danger-bg);
-      color: var(--danger-text);
-      border: none;
-      padding: 14px;
-      border-radius: var(--radius-pill);
-      font-size: 0.92rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 8px;
-    }
-
-    .btn-action-delete:active { opacity: 0.85; }
-
-    /* Tela de Minhas Folhas */
-    .view-overlay {
-      position: absolute;
-      inset: 0;
-      background: #fff;
-      z-index: 850;
-      display: none;
-      flex-direction: column;
-      overflow-y: auto;
-      padding: 24px 20px 90px;
-    }
-
-    .view-overlay.active { display: flex; }
-
-    .leaf-card-item {
-      background: var(--input-bg);
-      border-radius: 20px;
-      padding: 16px;
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    /* Marcador Pin no Mapa */
-    .custom-leaf-bubble {
-      background: #fff;
-      border: 3px solid #000;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      position: relative;
-    }
-
-    .custom-leaf-bubble .status-indicator {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--accent-lime);
-      border: 2px solid #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 8px;
-    }
-
-    /* Toast */
-    .toast-pill {
-      position: fixed;
-      top: 18px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-70px);
-      background: rgba(18, 19, 21, 0.92);
-      backdrop-filter: blur(10px);
-      color: #fff;
-      padding: 8px 20px;
-      border-radius: var(--radius-pill);
-      font-size: 0.82rem;
-      font-weight: 700;
-      z-index: 3000;
-      transition: transform 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-      pointer-events: none;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-    }
-    .toast-pill.show { transform: translateX(-50%) translateY(0); }
+    .bottom-sheet { background: #fff; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 14px 18px 24px; max-height: 85vh; overflow-y: auto; }
+    .drag-pill { width: 36px; height: 4px; background: #cbd5e1; border-radius: var(--pill); margin: 0 auto 10px; }
+    .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .sheet-title { font-size: 1.15rem; font-weight: 800; }
+    .close-circle { width: 30px; height: 30px; border-radius: 50%; border: none; background: var(--input); font-size: 0.9rem; cursor: pointer; }
+    
+    .form-group { margin-bottom: 10px; }
+    .label-text { font-size: 0.7rem; font-weight: 800; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; display: block; }
+    .pill-input { width: 100%; background: var(--input); border: 1.5px solid transparent; border-radius: var(--pill); padding: 10px 14px; font-size: 0.88rem; font-weight: 600; outline: none; }
+    .pill-textarea { width: 100%; background: var(--input); border: 1.5px solid transparent; border-radius: 16px; padding: 10px 14px; font-size: 0.85rem; outline: none; resize: none; min-height: 44px; }
+    
+    .loc-tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--input); border-radius: var(--pill); padding: 3px; gap: 4px; margin-bottom: 6px; }
+    .loc-tab-btn { border: none; background: transparent; padding: 7px; border-radius: var(--pill); font-size: 0.74rem; font-weight: 700; color: var(--muted); cursor: pointer; }
+    .loc-tab-btn.active { background: #fff; color: #000; }
+    .loc-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 16px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+    
+    .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .choice-card { background: var(--input); border: 2px solid transparent; border-radius: 14px; padding: 8px; text-align: center; cursor: pointer; }
+    .choice-card.selected { border-color: #000; background: #fff; }
+    
+    .photo-preview-box { width: 100%; height: 95px; border-radius: 16px; background: var(--input); border: 1.5px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
+    .photo-preview-box img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .btn-lime { width: 100%; background: var(--lime); color: #000; border: none; padding: 12px; border-radius: var(--pill); font-size: 0.92rem; font-weight: 800; cursor: pointer; }
+    .btn-outline { width: 100%; background: #fff; border: 1.5px solid #cbd5e1; padding: 8px; border-radius: var(--pill); font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+    .btn-danger-pill { width: 100%; background: var(--red-bg); color: var(--red-txt); border: none; padding: 10px; border-radius: var(--pill); font-size: 0.86rem; font-weight: 700; cursor: pointer; margin-top: 6px; }
+    
+    .leaf-pin { background: #fff; border: 2px solid #000; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; box-shadow: 0 2px 6px rgba(0,0,0,0.3); position: relative; }
+    .leaf-pin span { position: absolute; top: -3px; right: -3px; width: 13px; height: 13px; border-radius: 50%; background: var(--lime); border: 1px solid #000; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 800; }
+    
+    .overlay-view { position: absolute; inset: 0; background: #fff; z-index: 850; display: none; flex-direction: column; overflow-y: auto; padding: 16px 16px 74px; }
+    .overlay-view.active { display: flex; }
+    .plant-card { background: var(--input); border-radius: 14px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    
+    .toast-msg { position: fixed; top: 14px; left: 50%; transform: translateX(-50%) translateY(-70px); background: #0f1012; color: #fff; padding: 7px 16px; border-radius: var(--pill); font-size: 0.78rem; font-weight: 700; z-index: 3000; transition: transform 0.25s; pointer-events: none; }
+    .toast-msg.show { transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
+  <div id="toast" class="toast-msg">Mensagem</div>
 
-  <div id="toast" class="toast-pill">Pronto</div>
-
-  <!-- Barra Superior -->
-  <div class="top-float-bar">
-    <div class="top-row">
-      <div class="brand-pill">
-        <span>🌿 MAPA DAS FOLHAS</span>
-        <span class="count-badge" id="stat-count">0</span>
-      </div>
-    </div>
-
-    <div class="search-wrapper">
-      <span>🔍</span>
-      <input type="text" id="search-input" placeholder="Buscar folha...">
-    </div>
-
-    <div class="pills-scroll">
+  <div class="top-bar">
+    <div class="brand-pill"><span>🌿 MAPA DAS FOLHAS</span><span class="badge-count" id="count-label">0</span></div>
+    <div class="search-box"><span>🔍</span><input type="text" id="search-input" placeholder="Buscar folha..."></div>
+    <div class="filter-row">
       <div class="filter-chip active" data-filter="all">Todos</div>
       <div class="filter-chip" data-filter="movimentado">🌙 Após 00h</div>
       <div class="filter-chip" data-filter="qualquer_horario">🕐 Qualquer horário</div>
     </div>
   </div>
 
-  <!-- Mapa e Botões Flutuantes -->
   <main>
     <div id="map"></div>
-    <button class="btn-circle-gps" id="btn-gps" title="Minha Localização">📍</button>
+    <button class="btn-gps" id="btn-gps">📍</button>
 
-    <!-- Tela: Minhas Folhas -->
-    <div class="view-overlay" id="view-leaves">
-      <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 16px;">Catálogo de Plantas</h2>
-      <div id="leaves-list-container"></div>
+    <div class="overlay-view" id="view-leaves">
+      <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 12px;">Minhas Plantas</h2>
+      <div id="leaves-container"></div>
     </div>
 
-    <!-- Tela: Ajustes / Backup -->
-    <div class="view-overlay" id="view-settings">
-      <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 16px;">Configurações</h2>
-      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px;">
-        Seus dados e registros estão guardados com segurança no navegador.
-      </p>
-      <button class="btn-action-primary" id="btn-export-json" style="margin-bottom: 12px; background: #e5e7eb;">
-        📥 Exportar Backup (JSON)
-      </button>
-      <button class="btn-action-delete" id="btn-clear-all">
-        🗑️ Limpar Todos os Registros
-      </button>
+    <div class="overlay-view" id="view-settings">
+      <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 12px;">Configurações</h2>
+      <button class="btn-outline" id="btn-export">📥 Exportar Backup (JSON)</button>
+      <button class="btn-danger-pill" id="btn-clear-all" style="margin-top: 10px;">🗑️ Limpar Todos os Registros</button>
     </div>
   </main>
 
-  <!-- Barra de Navegação Inferior -->
   <nav class="bottom-nav">
     <button class="nav-tab active" data-tab="map">🗺️ Mapa</button>
     <button class="nav-add-btn" id="nav-btn-add">＋ Adicionar</button>
@@ -611,76 +114,594 @@
     <button class="nav-tab" data-tab="settings">⚙️ Ajustes</button>
   </nav>
 
-  <!-- MODAL BOTTOM SHEET: Cadastro / Edição -->
   <div class="sheet-overlay" id="sheet-form">
     <div class="bottom-sheet">
-      <div class="drag-indicator"></div>
-      <div class="sheet-title-row">
+      <div class="drag-pill"></div>
+      <div class="sheet-header">
         <h3 class="sheet-title" id="form-title">Nova Folha</h3>
-        <button class="circle-close" id="form-close">✕</button>
+        <button class="close-circle" id="form-close">✕</button>
       </div>
 
       <input type="hidden" id="f-id">
       <input type="hidden" id="f-lat">
       <input type="hidden" id="f-lng">
 
-      <!-- Nome -->
       <div class="form-group">
-        <label class="field-label">Nome da Planta / Folha *</label>
-        <input type="text" id="f-name" class="clean-input" placeholder="Ex: Arruda, Guiné, Alecrim">
+        <label class="label-text">Nome da Folha *</label>
+        <input type="text" id="f-name" class="pill-input" placeholder="Ex: Arruda, Guiné">
       </div>
 
-      <!-- Foto -->
       <div class="form-group">
-        <label class="field-label">Foto da Planta</label>
-        <input type="file" id="f-file" accept="image/*" capture="environment" style="display:none;">
-        <div class="photo-drop-box" id="photo-box">
-          <span id="photo-ph-text" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">
-            📷 Tirar ou escolher foto
-          </span>
-          <img id="photo-preview" style="display:none;" alt="Prévia">
+        <label class="label-text">Foto</label>
+        <input type="file" id="f-file" accept="image/*" style="display:none;">
+        <div class="photo-preview-box" id="photo-area">
+          <span id="photo-txt" style="font-size: 0.76rem; color: var(--muted);">📷 Escolher Foto</span>
+          <img id="photo-img" style="display:none;" alt="Foto">
         </div>
       </div>
 
-      <!-- Localização: GPS ou Endereço Escrito -->
       <div class="form-group">
-        <label class="field-label">Como deseja registrar o local? *</label>
-        
-        <div class="loc-toggle-tabs">
-          <button type="button" class="loc-tab-btn active" id="tab-mode-gps">📍 Coordenadas / GPS</button>
-          <button type="button" class="loc-tab-btn" id="tab-mode-addr">✍️ Endereço Escrito</button>
+        <label class="label-text">Localização *</label>
+        <div class="loc-tabs">
+          <button type="button" class="loc-tab-btn active" id="tab-gps">📍 Salvar Localização</button>
+          <button type="button" class="loc-tab-btn" id="tab-addr">✍️ Incluir Endereço</button>
         </div>
 
-        <!-- Bloco GPS -->
-        <div class="loc-box-content" id="box-mode-gps">
-          <div style="display: flex; gap: 8px;">
-            <button type="button" id="btn-action-gps" class="btn-action-primary" style="margin: 0; padding: 10px; font-size: 0.82rem; background: #fff; border: 1px solid var(--border-soft);">
-              📍 Atualizar GPS
-            </button>
-            <button type="button" id="btn-action-pick" class="btn-action-primary" style="margin: 0; padding: 10px; font-size: 0.82rem; background: #fff; border: 1px solid var(--border-soft);">
-              🗺️ Marcar no Mapa
-            </button>
+        <div class="loc-box" id="box-gps">
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn-outline" id="btn-use-gps" style="flex:1;">📍 Meu GPS</button>
+            <button type="button" class="btn-outline" id="btn-pick-map" style="flex:1;">🗺️ No Mapa</button>
           </div>
-          <div id="gps-status-label" style="font-size: 0.76rem; color: var(--text-muted); text-align: center;">
-            Aguardando localização...
-          </div>
+          <div id="lbl-gps-status" style="font-size: 0.72rem; color: var(--muted); text-align: center;">Aguardando GPS...</div>
         </div>
 
-        <!-- Bloco Endereço Escrito -->
-        <div class="loc-box-content" id="box-mode-addr" style="display: none;">
-          <input type="text" id="f-address" class="clean-input" placeholder="Ex: Av. Paulista, 1000 ou Rua das Rosas">
-          <button type="button" id="btn-search-addr" class="btn-action-primary" style="margin: 0; padding: 10px; font-size: 0.82rem; background: #fff; border: 1px solid var(--border-soft);">
-            🔍 Localizar no Mapa por Endereço
-          </button>
-          <div id="addr-status-label" style="font-size: 0.76rem; color: var(--text-muted); text-align: center;">
-            Você pode digitar o endereço ou ponto de referência.
+        <div class="loc-box" id="box-addr" style="display:none;">
+          <input type="text" id="f-address" class="pill-input" placeholder="Ex: Rua das Rosas, 100">
+          <button type="button" class="btn-outline" id="btn-search-addr">🔍 Buscar Endereço no Mapa</button>
+          <div id="lbl-addr-status" style="font-size: 0.72rem; color: var(--muted); text-align: center;">Digite o endereço e busque.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label-text">Retirada</label>
+        <div class="choice-grid">
+          <div class="choice-card" id="card-night">
+            <div style="font-size: 1rem;">🌙</div>
+            <div style="font-size: 0.74rem; font-weight: 700;">Após 00h</div>
+          </div>
+          <div class="choice-card selected" id="card-day">
+            <div style="font-size: 1rem;">🕐</div>
+            <div style="font-size: 0.74rem; font-weight: 700;">Qualquer horário</div>
           </div>
         </div>
       </div>
 
-      <!-- Tipo de Retirada -->
       <div class="form-group">
-        <label class="field-label">Tipo de Retirada</label>
-        <div class="badge-choice-grid">
-          <div class="badge-choice-card" id="card-night" onclick="selectWithdrawal('movimentado')">
-            <div style
+        <label class="label-text">Observações</label>
+        <textarea id="f-obs" class="pill-textarea" placeholder="Detalhes do local..."></textarea>
+      </div>
+
+      <button class="btn-lime" id="btn-save">Salvar Planta</button>
+      <button class="btn-danger-pill" id="btn-del-form" style="display:none;">🗑️ Apagar Esta Planta</button>
+    </div>
+  </div>
+
+  <div class="sheet-overlay" id="sheet-details">
+    <div class="bottom-sheet">
+      <div class="drag-pill"></div>
+      <div class="sheet-header">
+        <h3 class="sheet-title" id="det-name">Nome</h3>
+        <button class="close-circle" id="det-close">✕</button>
+      </div>
+
+      <div style="height: 120px; border-radius: 14px; overflow: hidden; background: #e2e8f0; margin-bottom: 8px;">
+        <img id="det-img" style="width: 100%; height: 100%; object-fit: cover;" alt="Foto">
+      </div>
+
+      <div id="det-addr" style="font-size: 0.75rem; color: var(--muted); margin-bottom: 6px;"></div>
+      <div id="det-obs" style="background: var(--input); padding: 8px; border-radius: 10px; font-size: 0.78rem; margin-bottom: 10px;"></div>
+
+      <button class="btn-lime" id="det-route">🧭 Rota no Google Maps</button>
+      <div style="display: flex; gap: 6px; margin-top: 6px;">
+        <button class="btn-outline" id="det-edit" style="flex:1;">✏️ Editar</button>
+        <button class="btn-danger-pill" id="det-delete" style="flex:1; margin:0;">🗑️ Apagar Planta</button>
+      </div>
+    </div>
+  </div>
+Perfeito! Essa é a estratégia correta: dividindo em duas metades, o sistema não corta nenhuma linha e todo o JavaScript fica 100% funcional.
+
+Você só precisa abrir o **Bloco de Notas**, colar a **PARTE 1** e, logo na linha de baixo, colar a **PARTE 2**, salvando como `index.html`.
+
+---
+
+### PARTE 1 (Copie do início até o final deste bloco)
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mapa das Folhas</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --bg: #121316;
+      --card: #ffffff;
+      --text: #111215;
+      --muted: #64748b;
+      --input: #f1f5f9;
+      --lime: #cbf30e;
+      --red-bg: #fee2e2;
+      --red-txt: #dc2626;
+      --pill: 9999px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    .top-bar { position: absolute; top: 10px; left: 12px; right: 12px; z-index: 1000; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+    .brand-pill { pointer-events: auto; background: rgba(18,19,22,0.92); padding: 6px 14px; border-radius: var(--pill); color: #fff; font-weight: 800; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px; width: fit-content; border: 1px solid rgba(255,255,255,0.15); }
+    .badge-count { background: var(--lime); color: #000; font-size: 0.7rem; padding: 2px 7px; border-radius: 10px; font-weight: 800; }
+    .search-box { pointer-events: auto; background: #fff; border-radius: var(--pill); padding: 7px 14px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.25); }
+    .search-box input { border: none; outline: none; width: 100%; font-size: 0.86rem; font-weight: 600; color: var(--text); }
+    .filter-row { pointer-events: auto; display: flex; gap: 6px; overflow-x: auto; }
+    .filter-chip { background: rgba(18,19,22,0.85); color: #fff; padding: 5px 12px; border-radius: var(--pill); font-size: 0.72rem; font-weight: 700; white-space: nowrap; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+    .filter-chip.active { background: var(--lime); color: #000; font-weight: 800; }
+    
+    main { flex: 1; position: relative; }
+    #map { width: 100%; height: 100%; }
+    .btn-gps { position: absolute; right: 14px; bottom: 82px; z-index: 800; width: 46px; height: 46px; border-radius: 50%; background: #fff; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    
+    .bottom-nav { position: absolute; bottom: 12px; left: 14px; right: 14px; background: rgba(255,255,255,0.96); border-radius: var(--pill); padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; z-index: 900; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+    .nav-tab { background: none; border: none; padding: 8px 12px; font-size: 0.78rem; font-weight: 700; color: var(--muted); cursor: pointer; border-radius: var(--pill); }
+    .nav-tab.active { color: #000; background: var(--input); }
+    .nav-add-btn { background: var(--lime); color: #000; border: none; padding: 10px 18px; border-radius: var(--pill); font-size: 0.88rem; font-weight: 800; cursor: pointer; }
+    
+    .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: flex-end; justify-content: center; }
+    .sheet-overlay.active { display: flex; }
+    .bottom-sheet { background: #fff; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 14px 18px 24px; max-height: 85vh; overflow-y: auto; }
+    .drag-pill { width: 36px; height: 4px; background: #cbd5e1; border-radius: var(--pill); margin: 0 auto 10px; }
+    .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .sheet-title { font-size: 1.15rem; font-weight: 800; }
+    .close-circle { width: 30px; height: 30px; border-radius: 50%; border: none; background: var(--input); font-size: 0.9rem; cursor: pointer; }
+    
+    .form-group { margin-bottom: 10px; }
+    .label-text { font-size: 0.7rem; font-weight: 800; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; display: block; }
+    .pill-input { width: 100%; background: var(--input); border: 1.5px solid transparent; border-radius: var(--pill); padding: 10px 14px; font-size: 0.88rem; font-weight: 600; outline: none; }
+    .pill-textarea { width: 100%; background: var(--input); border: 1.5px solid transparent; border-radius: 16px; padding: 10px 14px; font-size: 0.85rem; outline: none; resize: none; min-height: 44px; }
+    
+    .loc-tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--input); border-radius: var(--pill); padding: 3px; gap: 4px; margin-bottom: 6px; }
+    .loc-tab-btn { border: none; background: transparent; padding: 7px; border-radius: var(--pill); font-size: 0.74rem; font-weight: 700; color: var(--muted); cursor: pointer; }
+    .loc-tab-btn.active { background: #fff; color: #000; }
+    .loc-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 16px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+    
+    .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .choice-card { background: var(--input); border: 2px solid transparent; border-radius: 14px; padding: 8px; text-align: center; cursor: pointer; }
+    .choice-card.selected { border-color: #000; background: #fff; }
+    
+    .photo-preview-box { width: 100%; height: 95px; border-radius: 16px; background: var(--input); border: 1.5px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
+    .photo-preview-box img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .btn-lime { width: 100%; background: var(--lime); color: #000; border: none; padding: 12px; border-radius: var(--pill); font-size: 0.92rem; font-weight: 800; cursor: pointer; }
+    .btn-outline { width: 100%; background: #fff; border: 1.5px solid #cbd5e1; padding: 8px; border-radius: var(--pill); font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+    .btn-danger-pill { width: 100%; background: var(--red-bg); color: var(--red-txt); border: none; padding: 10px; border-radius: var(--pill); font-size: 0.86rem; font-weight: 700; cursor: pointer; margin-top: 6px; }
+    
+    .leaf-pin { background: #fff; border: 2px solid #000; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; box-shadow: 0 2px 6px rgba(0,0,0,0.3); position: relative; }
+    .leaf-pin span { position: absolute; top: -3px; right: -3px; width: 13px; height: 13px; border-radius: 50%; background: var(--lime); border: 1px solid #000; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 800; }
+    
+    .overlay-view { position: absolute; inset: 0; background: #fff; z-index: 850; display: none; flex-direction: column; overflow-y: auto; padding: 16px 16px 74px; }
+    .overlay-view.active { display: flex; }
+    .plant-card { background: var(--input); border-radius: 14px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    
+    .toast-msg { position: fixed; top: 14px; left: 50%; transform: translateX(-50%) translateY(-70px); background: #0f1012; color: #fff; padding: 7px 16px; border-radius: var(--pill); font-size: 0.78rem; font-weight: 700; z-index: 3000; transition: transform 0.25s; pointer-events: none; }
+    .toast-msg.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <div id="toast" class="toast-msg">Mensagem</div>
+
+  <div class="top-bar">
+    <div class="brand-pill"><span>🌿 MAPA DAS FOLHAS</span><span class="badge-count" id="count-label">0</span></div>
+    <div class="search-box"><span>🔍</span><input type="text" id="search-input" placeholder="Buscar folha..."></div>
+    <div class="filter-row">
+      <div class="filter-chip active" data-filter="all">Todos</div>
+      <div class="filter-chip" data-filter="movimentado">🌙 Após 00h</div>
+      <div class="filter-chip" data-filter="qualquer_horario">🕐 Qualquer horário</div>
+    </div>
+  </div>
+
+  <main>
+    <div id="map"></div>
+    <button class="btn-gps" id="btn-gps">📍</button>
+
+    <div class="overlay-view" id="view-leaves">
+      <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 12px;">Minhas Plantas</h2>
+      <div id="leaves-container"></div>
+    </div>
+
+    <div class="overlay-view" id="view-settings">
+      <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 12px;">Configurações</h2>
+      <button class="btn-outline" id="btn-export">📥 Exportar Backup (JSON)</button>
+      <button class="btn-danger-pill" id="btn-clear-all" style="margin-top: 10px;">🗑️ Limpar Todos os Registros</button>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-tab active" data-tab="map">🗺️ Mapa</button>
+    <button class="nav-add-btn" id="nav-btn-add">＋ Adicionar</button>
+    <button class="nav-tab" data-tab="leaves">🌿 Folhas</button>
+    <button class="nav-tab" data-tab="settings">⚙️ Ajustes</button>
+  </nav>
+
+  <div class="sheet-overlay" id="sheet-form">
+    <div class="bottom-sheet">
+      <div class="drag-pill"></div>
+      <div class="sheet-header">
+        <h3 class="sheet-title" id="form-title">Nova Folha</h3>
+        <button class="close-circle" id="form-close">✕</button>
+      </div>
+
+      <input type="hidden" id="f-id">
+      <input type="hidden" id="f-lat">
+      <input type="hidden" id="f-lng">
+
+      <div class="form-group">
+        <label class="label-text">Nome da Folha *</label>
+        <input type="text" id="f-name" class="pill-input" placeholder="Ex: Arruda, Guiné">
+      </div>
+
+      <div class="form-group">
+        <label class="label-text">Foto</label>
+        <input type="file" id="f-file" accept="image/*" style="display:none;">
+        <div class="photo-preview-box" id="photo-area">
+          <span id="photo-txt" style="font-size: 0.76rem; color: var(--muted);">📷 Escolher Foto</span>
+          <img id="photo-img" style="display:none;" alt="Foto">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label-text">Localização *</label>
+        <div class="loc-tabs">
+          <button type="button" class="loc-tab-btn active" id="tab-gps">📍 Salvar Localização</button>
+          <button type="button" class="loc-tab-btn" id="tab-addr">✍️ Incluir Endereço</button>
+        </div>
+
+        <div class="loc-box" id="box-gps">
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn-outline" id="btn-use-gps" style="flex:1;">📍 Meu GPS</button>
+            <button type="button" class="btn-outline" id="btn-pick-map" style="flex:1;">🗺️ No Mapa</button>
+          </div>
+          <div id="lbl-gps-status" style="font-size: 0.72rem; color: var(--muted); text-align: center;">Aguardando GPS...</div>
+        </div>
+
+        <div class="loc-box" id="box-addr" style="display:none;">
+          <input type="text" id="f-address" class="pill-input" placeholder="Ex: Rua das Rosas, 100">
+          <button type="button" class="btn-outline" id="btn-search-addr">🔍 Buscar Endereço no Mapa</button>
+          <div id="lbl-addr-status" style="font-size: 0.72rem; color: var(--muted); text-align: center;">Digite o endereço e busque.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label-text">Retirada</label>
+        <div class="choice-grid">
+          <div class="choice-card" id="card-night">
+            <div style="font-size: 1rem;">🌙</div>
+            <div style="font-size: 0.74rem; font-weight: 700;">Após 00h</div>
+          </div>
+          <div class="choice-card selected" id="card-day">
+            <div style="font-size: 1rem;">🕐</div>
+            <div style="font-size: 0.74rem; font-weight: 700;">Qualquer horário</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label-text">Observações</label>
+        <textarea id="f-obs" class="pill-textarea" placeholder="Detalhes do local..."></textarea>
+      </div>
+
+      <button class="btn-lime" id="btn-save">Salvar Planta</button>
+      <button class="btn-danger-pill" id="btn-del-form" style="display:none;">🗑️ Apagar Esta Planta</button>
+    </div>
+  </div>
+
+  <div class="sheet-overlay" id="sheet-details">
+    <div class="bottom-sheet">
+      <div class="drag-pill"></div>
+      <div class="sheet-header">
+        <h3 class="sheet-title" id="det-name">Nome</h3>
+        <button class="close-circle" id="det-close">✕</button>
+      </div>
+
+      <div style="height: 120px; border-radius: 14px; overflow: hidden; background: #e2e8f0; margin-bottom: 8px;">
+        <img id="det-img" style="width: 100%; height: 100%; object-fit: cover;" alt="Foto">
+      </div>
+
+      <div id="det-addr" style="font-size: 0.75rem; color: var(--muted); margin-bottom: 6px;"></div>
+      <div id="det-obs" style="background: var(--input); padding: 8px; border-radius: 10px; font-size: 0.78rem; margin-bottom: 10px;"></div>
+
+      <button class="btn-lime" id="det-route">🧭 Rota no Google Maps</button>
+      <div style="display: flex; gap: 6px; margin-top: 6px;">
+        <button class="btn-outline" id="det-edit" style="flex:1;">✏️ Editar</button>
+        <button class="btn-danger-pill" id="det-delete" style="flex:1; margin:0;">🗑️ Apagar Planta</button>
+      </div>
+    </div>
+  </div>
+```
+
+---
+
+### PARTE 2 (Cole imediatamente abaixo da PARTE 1)
+
+```html
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    var KEY = 'mapa_folhas_db_v5';
+    var locations = JSON.parse(localStorage.getItem(KEY)) || [];
+    var map, markersLayer, userLoc = null;
+    var selectedType = 'qualquer_horario';
+    var currentPhoto = '', currentItem = null, activeFilter = 'all', isPicking = false;
+
+    window.onload = function() {
+      map = L.map('map', { zoomControl: false }).setView([-23.5505, -46.6333], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+      markersLayer = L.layerGroup().addTo(map);
+
+      map.on('click', function(e) {
+        if (isPicking) {
+          isPicking = false;
+          setCoords(e.latlng.lat, e.latlng.lng, '🗺️ Marcado: ' + e.latlng.lat.toFixed(4) + ', ' + e.latlng.lng.toFixed(4));
+          openForm(currentItem);
+        }
+      });
+
+      document.getElementById('btn-gps').onclick = function() { getGPS(true); };
+      document.getElementById('search-input').oninput = renderMap;
+      document.getElementById('nav-btn-add').onclick = function() { openForm(null); };
+      document.getElementById('form-close').onclick = closeSheets;
+      document.getElementById('det-close').onclick = closeSheets;
+      document.getElementById('btn-use-gps').onclick = function() { getGPS(false); };
+
+      document.getElementById('btn-pick-map').onclick = function() {
+        isPicking = true;
+        closeSheets();
+        toast('Toque no mapa para marcar o local');
+      };
+
+      document.getElementById('tab-gps').onclick = function() {
+        document.getElementById('tab-gps').className = 'loc-tab-btn active';
+        document.getElementById('tab-addr').className = 'loc-tab-btn';
+        document.getElementById('box-gps').style.display = 'flex';
+        document.getElementById('box-addr').style.display = 'none';
+      };
+
+      document.getElementById('tab-addr').onclick = function() {
+        document.getElementById('tab-addr').className = 'loc-tab-btn active';
+        document.getElementById('tab-gps').className = 'loc-tab-btn';
+        document.getElementById('box-addr').style.display = 'flex';
+        document.getElementById('box-gps').style.display = 'none';
+      };
+
+      document.getElementById('card-night').onclick = function() { setType('movimentado'); };
+      document.getElementById('card-day').onclick = function() { setType('qualquer_horario'); };
+
+      var fileInp = document.getElementById('f-file');
+      document.getElementById('photo-area').onclick = function() { fileInp.click(); };
+      fileInp.onchange = handlePhoto;
+
+      document.getElementById('btn-search-addr').onclick = searchAddress;
+      document.getElementById('btn-save').onclick = savePlant;
+
+      document.getElementById('btn-del-form').onclick = function() {
+        if (currentItem && confirm('Deseja apagar esta planta?')) {
+          deletePlant(currentItem.id);
+        }
+      };
+
+      document.getElementById('det-route').onclick = function() {
+        if (!currentItem) return;
+        var origin = userLoc ? (userLoc.lat + ',' + userLoc.lng) : '';
+        window.open('https://www.google.com/maps/dir/?api=1&destination=' + currentItem.lat + ',' + currentItem.lng + (origin ? '&origin=' + origin : ''), '_blank');
+      };
+
+      document.getElementById('det-edit').onclick = function() {
+        var it = currentItem;
+        closeSheets();
+        openForm(it);
+      };
+
+      document.getElementById('det-delete').onclick = function() {
+        if (currentItem && confirm('Deseja apagar esta planta?')) {
+          deletePlant(currentItem.id);
+        }
+      };
+
+      document.getElementById('btn-export').onclick = function() {
+        var blob = new Blob([JSON.stringify(locations, null, 2)], { type: 'application/json' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'mapa-folhas-backup.json';
+        a.click();
+      };
+
+      document.getElementById('btn-clear-all').onclick = function() {
+        if (confirm('Deseja apagar todas as plantas cadastradas?')) {
+          locations = [];
+          localStorage.removeItem(KEY);
+          closeSheets();
+          renderMap();
+          renderCount();
+          toast('Todos os registros foram apagados');
+        }
+      };
+
+      var chips = document.querySelectorAll('.filter-chip');
+      chips.forEach(function(c) {
+        c.onclick = function() {
+          chips.forEach(function(x) { x.className = 'filter-chip'; });
+          c.className = 'filter-chip active';
+          activeFilter = c.getAttribute('data-filter');
+          renderMap();
+        };
+      });
+
+      var tabs = document.querySelectorAll('.nav-tab');
+      tabs.forEach(function(t) {
+        t.onclick = function() {
+          tabs.forEach(function(x) { x.className = 'nav-tab'; });
+          t.className = 'nav-tab active';
+          document.querySelectorAll('.overlay-view').forEach(function(v) { v.className = 'overlay-view'; });
+          var tab = t.getAttribute('data-tab');
+          if (tab === 'leaves') {
+            renderLeaves();
+            document.getElementById('view-leaves').className = 'overlay-view active';
+          } else if (tab === 'settings') {
+            document.getElementById('view-settings').className = 'overlay-view active';
+          }
+        };
+      });
+
+      getGPS(false);
+      renderMap();
+      renderCount();
+    };
+
+    function toast(msg) {
+      var t = document.getElementById('toast');
+      t.innerText = msg;
+      t.className = 'toast-msg show';
+      setTimeout(function() { t.className = 'toast-msg'; }, 2000);
+    }
+
+    function getGPS(center) {
+      if (!navigator.geolocation) return toast('GPS não suportado');
+      navigator.geolocation.getCurrentPosition(function(pos) {
+        userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setCoords(userLoc.lat, userLoc.lng, '📍 ' + userLoc.lat.toFixed(4) + ', ' + userLoc.lng.toFixed(4));
+        if (center) {
+          map.setView([userLoc.lat, userLoc.lng], 16);
+          toast('GPS atualizado');
+        }
+      }, function() {
+        document.getElementById('lbl-gps-status').innerText = 'Permissão GPS negada';
+      }, { enableHighAccuracy: true });
+    }
+
+    function setCoords(lat, lng, txt) {
+      document.getElementById('f-lat').value = lat;
+      document.getElementById('f-lng').value = lng;
+      document.getElementById('lbl-gps-status').innerText = txt;
+    }
+
+    function setType(t) {
+      selectedType = t;
+      document.getElementById('card-night').className = t === 'movimentado' ? 'choice-card selected' : 'choice-card';
+      document.getElementById('card-day').className = t === 'qualquer_horario' ? 'choice-card selected' : 'choice-card';
+    }
+
+    function handlePhoto(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var img = new Image();
+        img.onload = function() {
+          var cvs = document.createElement('canvas');
+          var w = img.width, h = img.height, max = 450;
+          if (w > h && w > max) { h = Math.round((h * max) / w); w = max; }
+          else if (h > max) { w = Math.round((w * max) / h); h = max; }
+          cvs.width = w; cvs.height = h;
+          cvs.getContext('2d').drawImage(img, 0, 0, w, h);
+          setPhotoPreview(cvs.toDataURL('image/jpeg', 0.6));
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function setPhotoPreview(src) {
+      currentPhoto = src;
+      var el = document.getElementById('photo-img');
+      var txt = document.getElementById('photo-txt');
+      if (src) {
+        el.src = src; el.style.display = 'block'; txt.style.display = 'none';
+      } else {
+        el.style.display = 'none'; txt.style.display = 'block';
+      }
+    }
+
+    function searchAddress() {
+      var q = document.getElementById('f-address').value.trim();
+      var st = document.getElementById('lbl-addr-status');
+      if (!q) return alert('Digite um endereço');
+      st.innerText = 'Buscando no mapa...';
+      fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(q) + '&limit=1')
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          if (data && data.length > 0) {
+            var lat = parseFloat(data[0].lat);
+            var lon = parseFloat(data[0].lon);
+            setCoords(lat, lon, '📍 ' + lat.toFixed(4) + ', ' + lon.toFixed(4));
+            st.innerText = 'Localizado no mapa!';
+            map.setView([lat, lon], 16);
+            toast('Endereço encontrado');
+          } else {
+            st.innerText = 'Endereço não localizado';
+          }
+        }).catch(function() {
+          st.innerText = 'Erro ao buscar endereço';
+        });
+    }
+
+    function openForm(item) {
+      closeSheets();
+      currentItem = item || null;
+      document.getElementById('form-title').innerText = item ? 'Editar Folha' : 'Nova Folha';
+      document.getElementById('f-id').value = item ? item.id : '';
+      document.getElementById('f-name').value = item ? item.name : '';
+      document.getElementById('f-obs').value = item ? (item.obs || '') : '';
+      document.getElementById('f-address').value = item ? (item.address || '') : '';
+      document.getElementById('btn-del-form').style.display = item ? 'block' : 'none';
+      setType(item ? item.type : 'qualquer_horario');
+      setPhotoPreview(item ? (item.photo || '') : '');
+
+      if (item) {
+        setCoords(item.lat, item.lng, '📍 ' + item.lat.toFixed(4) + ', ' + item.lng.toFixed(4));
+      } else if (userLoc) {
+        setCoords(userLoc.lat, userLoc.lng, '📍 ' + userLoc.lat.toFixed(4) + ', ' + userLoc.lng.toFixed(4));
+      }
+
+      document.getElementById('sheet-form').className = 'sheet-overlay active';
+    }
+
+    function closeSheets() {
+      document.querySelectorAll('.sheet-overlay').forEach(function(s) { s.className = 'sheet-overlay'; });
+    }
+
+    function savePlant() {
+      var name = document.getElementById('f-name').value.trim();
+      var lat = parseFloat(document.getElementById('f-lat').value);
+      var lng = parseFloat(document.getElementById('f-lng').value);
+      var obs = document.getElementById('f-obs').value.trim();
+      var addr = document.getElementById('f-address').value.trim();
+      var id = document.getElementById('f-id').value;
+
+      if (!name) return alert('Informe o nome da planta');
+      if (isNaN(lat) || isNaN(lng)) return alert('Selecione uma localização no GPS ou mapa');
+
+      if (id) {
+        var idx = locations.findIndex(function(x) { return x.id === id; });
+        if (idx !== -1) {
+          locations[idx] = { id: id, name: name, lat: lat, lng: lng, obs: obs, address: addr, type: selectedType, photo: currentPhoto };
+        }
+      } else {
+        locations.push({
+          id: 'p_' + Date.now(),
+          name: name, lat: lat, lng: lng, obs: obs, address: addr, type: selectedType, photo: currentPhoto
+        });
+      }
+
+      localStorage.setItem(KEY, JSON.stringify(locations));
+      closeSheets();
+      renderMap();
+      renderCount();
