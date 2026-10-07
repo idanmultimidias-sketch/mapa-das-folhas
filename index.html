@@ -34,7 +34,7 @@
     .btn-gps { position: absolute; right: 14px; bottom: 82px; z-index: 800; width: 46px; height: 46px; border-radius: 50%; background: #fff; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     
     .bottom-nav { position: absolute; bottom: 12px; left: 14px; right: 14px; background: rgba(255,255,255,0.96); border-radius: var(--pill); padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; z-index: 900; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
-    .nav-tab { background: none; border: none; padding: 8px 12px; font-size: 0.78rem; font-weight: 700; color: var(--muted); cursor: pointer; border-radius: var(--pill); }
+    .nav-tab { background: none; border: none; padding: 8px 12px; font-size: 0.78rem; font-weight: 700; color: var(--muted); cursor: border-radius: var(--pill); }
     .nav-tab.active { color: #000; background: var(--input); }
     .nav-add-btn { background: var(--lime); color: #000; border: none; padding: 10px 18px; border-radius: var(--pill); font-size: 0.88rem; font-weight: 800; cursor: pointer; }
     
@@ -208,13 +208,24 @@
       </div>
     </div>
   </div>
-Perfeito! Essa é a estratégia correta: dividindo em duas metades, o sistema não corta nenhuma linha e todo o JavaScript fica 100% funcional.
+O erro no seu arquivo é visível no final do texto que você colou:
+1. Você colou as instruções de texto do chat no meio do arquivo.
+2. O código duplicou a Parte 1 no meio do arquivo.
+3. A **Parte 2 foi cortada no final** (`renderCount();` sem fechar as funções `deletePlant`, `renderMap`, `renderCount`, nem as tags `</script>`, `</body>`, `</html>`). Por isso o navegador acusa erro de sintaxe e nenhum botão responde.
 
-Você só precisa abrir o **Bloco de Notas**, colar a **PARTE 1** e, logo na linha de baixo, colar a **PARTE 2**, salvando como `index.html`.
+Para não haver mais nenhum risco de corte nem de erro ao juntar, aqui está a divisão exata em **duas partes balanceadas**.
 
 ---
 
-### PARTE 1 (Copie do início até o final deste bloco)
+### INSTRUÇÕES:
+1. Abra um arquivo novo no Bloco de Notas.
+2. Copie e cole todo o conteúdo do **BLOCO 1** abaixo.
+3. Imediatamente na linha seguinte, copie e cole todo o conteúdo do **BLOCO 2** abaixo.
+4. Salve o arquivo com o nome **`index.html`** (em *Tipo*, selecione *Todos os arquivos*).
+
+---
+
+### BLOCO 1 (HTML e Estilos CSS)
 
 ```html
 <!DOCTYPE html>
@@ -253,7 +264,7 @@ Você só precisa abrir o **Bloco de Notas**, colar a **PARTE 1** e, logo na lin
     .btn-gps { position: absolute; right: 14px; bottom: 82px; z-index: 800; width: 46px; height: 46px; border-radius: 50%; background: #fff; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     
     .bottom-nav { position: absolute; bottom: 12px; left: 14px; right: 14px; background: rgba(255,255,255,0.96); border-radius: var(--pill); padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; z-index: 900; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
-    .nav-tab { background: none; border: none; padding: 8px 12px; font-size: 0.78rem; font-weight: 700; color: var(--muted); cursor: pointer; border-radius: var(--pill); }
+    .nav-tab { background: none; border: none; padding: 8px 12px; font-size: 0.78rem; font-weight: 700; color: var(--muted); cursor: border-radius: var(--pill); }
     .nav-tab.active { color: #000; background: var(--input); }
     .nav-add-btn { background: var(--lime); color: #000; border: none; padding: 10px 18px; border-radius: var(--pill); font-size: 0.88rem; font-weight: 800; cursor: pointer; }
     
@@ -427,13 +438,6 @@ Você só precisa abrir o **Bloco de Notas**, colar a **PARTE 1** e, logo na lin
       </div>
     </div>
   </div>
-```
-
----
-
-### PARTE 2 (Cole imediatamente abaixo da PARTE 1)
-
-```html
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     var KEY = 'mapa_folhas_db_v5';
@@ -690,18 +694,4 @@ Você só precisa abrir o **Bloco de Notas**, colar a **PARTE 1** e, logo na lin
       if (isNaN(lat) || isNaN(lng)) return alert('Selecione uma localização no GPS ou mapa');
 
       if (id) {
-        var idx = locations.findIndex(function(x) { return x.id === id; });
-        if (idx !== -1) {
-          locations[idx] = { id: id, name: name, lat: lat, lng: lng, obs: obs, address: addr, type: selectedType, photo: currentPhoto };
-        }
-      } else {
-        locations.push({
-          id: 'p_' + Date.now(),
-          name: name, lat: lat, lng: lng, obs: obs, address: addr, type: selectedType, photo: currentPhoto
-        });
-      }
-
-      localStorage.setItem(KEY, JSON.stringify(locations));
-      closeSheets();
-      renderMap();
-      renderCount();
+        var idx = locations.findIndex(function(x) {
