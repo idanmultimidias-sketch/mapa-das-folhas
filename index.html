@@ -694,4 +694,91 @@ Para não haver mais nenhum risco de corte nem de erro ao juntar, aqui está a d
       if (isNaN(lat) || isNaN(lng)) return alert('Selecione uma localização no GPS ou mapa');
 
       if (id) {
-        var idx = locations.findIndex(function(x) {
+      var idx = locations.findIndex(function(x) { return x.id === id; });
+        if (idx !== -1) {
+          locations[idx] = { id: id, name: name, lat: lat, lng: lng, obs: obs, address: addr, type: selectedType, photo: currentPhoto };
+        }
+      } else {
+        locations.push({
+          id: 'p_' + Date.now(),
+          name: name, lat: lat, lng: lng, obs: obs, address: addr, type: selectedType, photo: currentPhoto
+        });
+      }
+
+      localStorage.setItem(KEY, JSON.stringify(locations));
+      closeSheets();
+      renderMap();
+      renderCount();
+      map.setView([lat, lng], 16);
+      toast('Planta salva com sucesso!');
+    }
+
+    function deletePlant(id) {
+      locations = locations.filter(function(x) { return x.id !== id; });
+      localStorage.setItem(KEY, JSON.stringify(locations));
+      closeSheets();
+      renderMap();
+      renderCount();
+      toast('Planta apagada');
+    }
+
+    function renderMap() {
+      markersLayer.clearLayers();
+      var q = document.getElementById('search-input').value.trim().toLowerCase();
+      locations.forEach(function(item) {
+        if (activeFilter !== 'all' && item.type !== activeFilter) return;
+        if (q && !item.name.toLowerCase().includes(q)) return;
+        var icon = L.divIcon({
+          className: '',
+          html: '<div class="leaf-pin">🌿<span>' + (item.type === 'movimentado' ? '🌙' : '🕐') + '</span></div>',
+          iconSize: [30, 30],
+          iconAnchor: [15, 15]
+        });
+        var m = L.marker([item.lat, item.lng], { icon: icon }).addTo(markersLayer);
+        m.on('click', function() { openDetails(item); });
+      });
+    }
+
+    function renderCount() {
+      document.getElementById('count-label').innerText = locations.length;
+    }
+
+    function openDetails(item) {
+      closeSheets();
+      currentItem = item;
+      document.getElementById('det-name').innerText = item.name;
+      var img = document.getElementById('det-img');
+      if (item.photo) {
+        img.src = item.photo;
+        img.style.display = 'block';
+      } else {
+        img.style.display = 'none';
+      }
+      document.getElementById('det-addr').innerText = item.address ? ('📍 ' + item.address) : ('📍 ' + item.lat.toFixed(4) + ', ' + item.lng.toFixed(4));
+      document.getElementById('det-obs').innerText = item.obs || 'Sem observações adicionais.';
+      document.getElementById('sheet-details').className = 'sheet-overlay active';
+    }
+
+    function renderLeaves() {
+      var c = document.getElementById('leaves-container');
+      c.innerHTML = '';
+      if (!locations.length) {
+        c.innerHTML = '<div style="font-size:0.8rem; color:var(--muted);">Nenhuma folha cadastrada ainda.</div>';
+        return;
+      }
+      locations.forEach(function(item) {
+        var d = document.createElement('div');
+        d.className = 'plant-card';
+        d.innerHTML = '<div><strong>' + item.name + '</strong><div style="font-size:0.7rem; color:var(--muted);">' + (item.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário') + '</div></div><span>➔</span>';
+        d.onclick = function() {
+          document.querySelectorAll('.overlay-view').forEach(function(v) { v.className = 'overlay-view'; });
+          document.querySelector('[data-tab="map"]').click();
+          map.setView([item.lat, item.lng], 16);
+          openDetails(item);
+        };
+        c.appendChild(d);
+      });
+    }
+  </script>
+</body>
+</html>
