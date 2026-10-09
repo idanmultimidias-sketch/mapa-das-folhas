@@ -5,24 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Mapa das Folhas</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f1013;
-      --card: #ffffff;
-      --text: #111418;
-      --muted: #64748b;
-      --input: #f1f5f9;
-      --lime: #cbf30e;
-      --danger-bg: #fee2e2;
-      --danger: #dc2626;
-      --pill: 9999px;
+      --bg: #0f1013; --card: #fff; --txt: #111418; --mut: #64748b;
+      --in: #f1f5f9; --lime: #cbf30e; --del: #fee2e2; --del-t: #dc2626; --pill: 9999px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); }
-    #map { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 1; }
-    .top-bar { position: fixed; top: 10px; left: 10px; right: 10px; z-index: 500; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--txt); }
+
+    /* MAPA */
+    #map { position: absolute; inset: 0; width: 100vw; height: 100vh; z-index: 1; }
+
+    /* TOPO */
+    .top-bar { position: fixed; top: 10px; left: 10px; right: 10px; z-index: 400; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
     .top-bar > * { pointer-events: auto; }
     .brand-pill { background: rgba(15,16,19,0.92); padding: 5px 12px; border-radius: var(--pill); color: #fff; font-weight: 800; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 6px; width: fit-content; border: 1px solid rgba(255,255,255,0.15); }
     .badge-count { background: var(--lime); color: #000; font-size: 0.7rem; padding: 2px 7px; border-radius: var(--pill); font-weight: 800; }
@@ -31,34 +27,46 @@
     .filter-row { display: flex; gap: 6px; overflow-x: auto; }
     .filter-chip { background: rgba(15,16,19,0.85); color: #fff; padding: 5px 12px; border-radius: var(--pill); font-size: 0.72rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; white-space: nowrap; transition: 0.2s; font-family: inherit; }
     .filter-chip.active { background: var(--lime); color: #000; border-color: var(--lime); font-weight: 800; }
-    .btn-gps { position: fixed; right: 14px; bottom: 80px; z-index: 500; width: 44px; height: 44px; border-radius: 50%; background: #fff; border: none; box-shadow: 0 4px 14px rgba(0,0,0,0.3); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .bottom-nav { position: fixed; bottom: 10px; left: 12px; right: 12px; background: rgba(255,255,255,0.96); border-radius: var(--pill); padding: 4px; display: flex; justify-content: space-between; align-items: center; z-index: 600; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
-    .nav-btn { flex: 1; border: none; background: transparent; padding: 9px 6px; border-radius: var(--pill); font-size: 0.76rem; font-weight: 700; color: var(--muted); cursor: pointer; transition: 0.2s; font-family: inherit; }
+
+    /* BOTÃO GPS */
+    .btn-gps { position: fixed; right: 14px; bottom: 78px; z-index: 400; width: 44px; height: 44px; border-radius: 50%; background: #fff; border: none; box-shadow: 0 4px 14px rgba(0,0,0,0.3); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    /* BARRA INFERIOR */
+    .bottom-nav { position: fixed; bottom: 10px; left: 12px; right: 12px; background: rgba(255,255,255,0.96); border-radius: var(--pill); padding: 4px; display: flex; justify-content: space-between; align-items: center; z-index: 500; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+    .nav-btn { flex: 1; border: none; background: transparent; padding: 9px 6px; border-radius: var(--pill); font-size: 0.76rem; font-weight: 700; color: var(--mut); cursor: pointer; transition: 0.2s; font-family: inherit; }
     .nav-btn.active { background: var(--lime); color: #000; font-weight: 800; box-shadow: 0 2px 8px rgba(203,243,14,0.5); }
-    .overlay-screen { position: fixed; inset: 0; background: #fff; z-index: 550; display: none; flex-direction: column; overflow-y: auto; padding: 16px 14px 80px; }
+
+    /* TELAS SOBREPOSTAS */
+    .overlay-screen { position: fixed; inset: 0; background: #fff; z-index: 450; display: none; flex-direction: column; overflow-y: auto; padding: 16px 14px 80px; }
     .overlay-screen.active { display: flex; }
-    .plant-card { background: var(--input); border-radius: 14px; padding: 10px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .plant-card { background: var(--in); border-radius: 14px; padding: 10px 12px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+
+    /* MODAL SHEETS */
     .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; display: none; align-items: flex-end; justify-content: center; }
     .sheet-overlay.active { display: flex; }
     .bottom-sheet { background: #fff; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 12px 16px 22px; max-height: 86vh; overflow-y: auto; }
     .drag-pill { width: 32px; height: 4px; background: #cbd5e1; border-radius: var(--pill); margin: 0 auto 8px; }
     .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .close-circle { width: 28px; height: 28px; border-radius: 50%; border: none; background: var(--input); font-size: 0.85rem; cursor: pointer; color: var(--muted); }
+    .close-circle { width: 28px; height: 28px; border-radius: 50%; border: none; background: var(--in); font-size: 0.85rem; cursor: pointer; color: var(--mut); }
+
+    /* CAMPOS E BOTÕES */
     .form-group { margin-bottom: 9px; }
-    .form-lbl { font-size: 0.68rem; font-weight: 800; color: var(--muted); text-transform: uppercase; margin-bottom: 3px; display: block; }
-    .p-input { width: 100%; background: var(--input); border: 1px solid transparent; border-radius: var(--pill); padding: 8px 12px; font-size: 0.84rem; font-weight: 600; outline: none; font-family: inherit; }
-    .p-textarea { width: 100%; background: var(--input); border: 1px solid transparent; border-radius: 14px; padding: 8px 12px; font-size: 0.82rem; outline: none; resize: none; min-height: 44px; font-family: inherit; }
-    .switch-grid { display: grid; grid-template-columns: 1fr 1fr; background: var(--input); border-radius: var(--pill); padding: 2px; gap: 3px; margin-bottom: 5px; }
-    .switch-btn { border: none; background: transparent; padding: 7px; border-radius: var(--pill); font-size: 0.72rem; font-weight: 700; color: var(--muted); cursor: pointer; transition: 0.2s; font-family: inherit; }
+    .form-lbl { font-size: 0.68rem; font-weight: 800; color: var(--mut); text-transform: uppercase; margin-bottom: 3px; display: block; }
+    .p-input { width: 100%; background: var(--in); border: 1px solid transparent; border-radius: var(--pill); padding: 8px 12px; font-size: 0.84rem; font-weight: 600; outline: none; font-family: inherit; }
+    .p-textarea { width: 100%; background: var(--in); border: 1px solid transparent; border-radius: 14px; padding: 8px 12px; font-size: 0.82rem; outline: none; resize: none; min-height: 44px; font-family: inherit; }
+    .switch-grid { display: grid; grid-template-columns: 1fr 1fr; background: var(--in); border-radius: var(--pill); padding: 2px; gap: 3px; margin-bottom: 5px; }
+    .switch-btn { border: none; background: transparent; padding: 7px; border-radius: var(--pill); font-size: 0.72rem; font-weight: 700; color: var(--mut); cursor: pointer; transition: 0.2s; font-family: inherit; }
     .switch-btn.active { background: var(--lime); color: #000; font-weight: 800; }
     .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .choice-card { background: var(--input); border: 2px solid transparent; border-radius: 12px; padding: 8px; text-align: center; cursor: pointer; font-size: 0.74rem; font-weight: 700; transition: 0.2s; font-family: inherit; }
+    .choice-card { background: var(--in); border: 2px solid transparent; border-radius: 12px; padding: 8px; text-align: center; cursor: pointer; font-size: 0.74rem; font-weight: 700; transition: 0.2s; font-family: inherit; }
     .choice-card.selected { background: var(--lime); border-color: #000; color: #000; font-weight: 800; }
     .btn-lime { width: 100%; background: var(--lime); color: #000; border: none; padding: 11px; border-radius: var(--pill); font-size: 0.88rem; font-weight: 800; cursor: pointer; box-shadow: 0 3px 10px rgba(203,243,14,0.4); font-family: inherit; }
     .btn-out { width: 100%; background: #fff; border: 1px solid #cbd5e1; padding: 7px; border-radius: var(--pill); font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: inherit; }
-    .btn-del { width: 100%; background: var(--danger-bg); color: var(--danger); border: none; padding: 9px; border-radius: var(--pill); font-size: 0.82rem; font-weight: 700; cursor: pointer; margin-top: 6px; font-family: inherit; }
-    .photo-box { width: 100%; height: 85px; border-radius: 14px; background: var(--input); border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; font-size: 0.74rem; color: var(--muted); font-weight: 600; }
+    .btn-del { width: 100%; background: var(--del); color: var(--del-t); border: none; padding: 9px; border-radius: var(--pill); font-size: 0.82rem; font-weight: 700; cursor: pointer; margin-top: 6px; font-family: inherit; }
+    .photo-box { width: 100%; height: 85px; border-radius: 14px; background: var(--in); border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; font-size: 0.74rem; color: var(--mut); font-weight: 600; }
     .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* PIN E TOAST */
     .leaf-pin { background: #fff; border: 2px solid #000; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; box-shadow: 0 3px 8px rgba(0,0,0,0.3); position: relative; }
     .leaf-pin span { position: absolute; top: -3px; right: -3px; width: 12px; height: 12px; border-radius: 50%; background: var(--lime); border: 1px solid #000; display: flex; align-items: center; justify-content: center; font-size: 6px; font-weight: 800; }
     .toast-box { position: fixed; top: 14px; left: 50%; transform: translateX(-50%) translateY(-70px); background: #0f1013; color: #fff; padding: 6px 16px; border-radius: var(--pill); font-size: 0.76rem; font-weight: 700; z-index: 3000; transition: 0.25s; pointer-events: none; }
@@ -67,8 +75,9 @@
 </head>
 <body>
 
-  <div id="toast" class="toast-box">Notificação</div>
+  <div id="toast" class="toast-box">Pronto!</div>
 
+  <!-- TOPO -->
   <div class="top-bar">
     <div class="brand-pill"><span>🌿 MAPA DAS FOLHAS</span><span class="badge-count" id="count-label">0</span></div>
     <div class="search-box"><span>🔍</span><input type="text" id="search-input" placeholder="Buscar folha..." oninput="renderMap()"></div>
@@ -82,6 +91,7 @@
   <div id="map"></div>
   <button class="btn-gps" onclick="getGPS(true)">📍</button>
 
+  <!-- TELAS -->
   <div class="overlay-screen" id="screen-leaves">
     <h2 style="font-size:1.15rem;font-weight:800;margin-bottom:10px;">Minhas Plantas</h2>
     <div id="leaves-container"></div>
@@ -93,6 +103,7 @@
     <button class="btn-del" onclick="clearAllData()">🗑️ Limpar Todos os Registros</button>
   </div>
 
+  <!-- BARRA NAVEGAÇÃO -->
   <nav class="bottom-nav">
     <button class="nav-btn active" id="tab-map" onclick="navTo('map')">🗺️ Mapa</button>
     <button class="nav-btn" id="tab-add" onclick="openForm(null)">＋ Adicionar</button>
@@ -100,7 +111,7 @@
     <button class="nav-btn" id="tab-settings" onclick="navTo('settings')">⚙️ Ajustes</button>
   </nav>
 
-  <!-- MODAL FORM -->
+  <!-- FORM CADASTRO -->
   <div class="sheet-overlay" id="sheet-form">
     <div class="bottom-sheet">
       <div class="drag-pill"></div>
@@ -139,13 +150,13 @@
             <button class="btn-out" onclick="getGPS(false)" style="flex:1;">📍 Meu GPS</button>
             <button class="btn-out" onclick="pickOnMap()" style="flex:1;">🗺️ No Mapa</button>
           </div>
-          <div id="lbl-gps-st" style="font-size:.7rem;color:var(--muted);text-align:center;">Local automático pronto</div>
+          <div id="lbl-gps-st" style="font-size:.7rem;color:var(--mut);text-align:center;">Local automático pronto</div>
         </div>
 
         <div id="panel-addr" style="display:none;flex-direction:column;gap:5px;">
           <input type="text" id="f-address" class="p-input" placeholder="Ex: Rua das Flores, 100, São Paulo">
           <button class="btn-out" onclick="searchAddr()">🔍 Buscar Endereço</button>
-          <div id="lbl-addr-st" style="font-size:.7rem;color:var(--muted);text-align:center;">Digite e busque.</div>
+          <div id="lbl-addr-st" style="font-size:.7rem;color:var(--mut);text-align:center;">Digite e busque.</div>
         </div>
       </div>
 
@@ -179,8 +190,8 @@
         <img id="det-img" style="width:100%;height:100%;object-fit:cover;" alt="">
       </div>
       <div id="det-badge" style="display:inline-block;background:var(--lime);color:#000;padding:2px 8px;border-radius:var(--pill);font-size:.68rem;font-weight:800;margin-bottom:4px;"></div>
-      <div id="det-addr" style="font-size:.74rem;color:var(--muted);margin-bottom:4px;"></div>
-      <div id="det-obs" style="background:var(--input);padding:8px 10px;border-radius:10px;font-size:.78rem;margin-bottom:8px;"></div>
+      <div id="det-addr" style="font-size:.74rem;color:var(--mut);margin-bottom:4px;"></div>
+      <div id="det-obs" style="background:var(--in);padding:8px 10px;border-radius:10px;font-size:.78rem;margin-bottom:8px;"></div>
       <button class="btn-lime" onclick="openRoute()">🧭 Rota no Google Maps</button>
       <div style="display:flex;gap:6px;margin-top:6px;">
         <button class="btn-out" onclick="editCurrent()" style="flex:1;">✏️ Editar</button>
@@ -188,9 +199,10 @@
       </div>
     </div>
   </div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const KEY = 'mapa_folhas_store_v9';
+    const KEY = 'mapa_folhas_store_v10';
     let plants = JSON.parse(localStorage.getItem(KEY)) || [];
     let map, markers, userLoc = null, activeFilter = 'all', activeType = 'qualquer_horario';
     let photoData = '', currentPlant = null, isPicking = false;
@@ -225,7 +237,8 @@
 
     function navTo(tab) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('tab-' + tab).classList.add('active');
+      const activeBtn = document.getElementById('tab-' + tab);
+      if (activeBtn) activeBtn.classList.add('active');
       document.querySelectorAll('.overlay-screen').forEach(s => s.classList.remove('active'));
 
       if (tab === 'leaves') {
@@ -338,6 +351,7 @@
       document.getElementById('f-name').value = item ? item.name : '';
       document.getElementById('f-obs').value = item ? (item.obs || '') : '';
       document.getElementById('f-address').value = item ? (item.address || '') : '';
+      <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>javascript
       document.getElementById('btn-del-form').style.display = item ? 'block' : 'none';
 
       setTimeType(item ? item.type : 'qualquer_horario');
@@ -448,8 +462,7 @@
       const c = document.getElementById('leaves-container');
       c.innerHTML = '';
       if (!plants.length) {
-        c.<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>javascript
-        c.innerHTML = '<div style="font-size:0.8rem; color:var(--muted); padding:10px 0;">Nenhuma planta cadastrada ainda.</div>';
+        c.innerHTML = '<div style="font-size:0.8rem; color:var(--mut); padding:10px 0;">Nenhuma planta cadastrada ainda.</div>';
         return;
       }
       plants.forEach(item => {
@@ -458,7 +471,7 @@
         card.innerHTML = `
           <div>
             <strong>${item.name}</strong>
-            <div style="font-size:0.72rem; color:var(--muted);">${item.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário'}</div>
+            <div style="font-size:0.72rem; color:var(--mut);">${item.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário'}</div>
           </div>
           <span style="font-weight:800; font-size:1rem;">➔</span>
         `;
