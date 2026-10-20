@@ -6,76 +6,98 @@
   <title>Mapa das Folhas</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #21431e;
-      --primary-dark: #132a13;
-      --accent: #4f772d;
-      --bg: #f7f9f5;
-      --text: #1c2718;
-      --muted: #62725e;
-      --border: #dbe4d6;
-      --danger: #b93838;
+      --bg: #0c0e12;
+      --card: #161922;
+      --card-sub: #1f2430;
+      --txt: #f3f4f6;
+      --muted: #94a3b8;
+      --border: rgba(255, 255, 255, 0.08);
+      --green: #10b981;
+      --blue: #2563eb;
+      --orange: #ea580c;
+      --danger: #ef4444;
+      --radius: 16px;
+      --pill: 9999px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    
-    header { background: var(--primary-dark); color: #fff; padding: 10px 14px; z-index: 1000; }
-    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .title { font-weight: 700; font-size: 1.05rem; }
-    .search-box { margin-bottom: 6px; }
-    .search-box input { width: 100%; padding: 7px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem; outline: none; }
-    .search-box input::placeholder { color: rgba(255,255,255,0.6); }
-    .pills { display: flex; gap: 6px; }
-    .pill { padding: 3px 8px; font-size: 0.72rem; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #e1ebd9; cursor: pointer; }
-    .pill.active { background: var(--accent); color: #fff; font-weight: 700; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--txt); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
+    /* TOPO */
+    header { background: rgba(12, 14, 18, 0.95); backdrop-filter: blur(8px); padding: 12px 14px 8px; z-index: 1000; border-bottom: 1px solid var(--border); }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .brand { font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 6px; }
+    .badge-count { background: var(--card-sub); border: 1px solid var(--border); padding: 2px 8px; border-radius: var(--pill); font-size: 0.7rem; font-weight: 700; color: var(--green); }
+    .search-wrap { margin-bottom: 8px; }
+    .search-wrap input { width: 100%; padding: 8px 12px; border-radius: var(--pill); border: 1px solid var(--border); background: var(--card); color: #fff; font-size: 0.84rem; outline: none; font-family: inherit; }
+    .search-wrap input::placeholder { color: #64748b; }
+    .pills { display: flex; gap: 6px; overflow-x: auto; }
+    .pill { padding: 4px 12px; font-size: 0.72rem; border-radius: var(--pill); background: var(--card); border: 1px solid var(--border); color: var(--muted); cursor: pointer; white-space: nowrap; font-weight: 600; }
+    .pill.active { background: #fff; color: #000; border-color: #fff; font-weight: 800; }
+
+    /* ÁREA PRINCIPAL E MAPA */
     main { flex: 1; position: relative; overflow: hidden; }
-    #map { width: 100%; height: 100%; background: #e3ebd8; }
-    .gps-btn { position: absolute; right: 14px; bottom: 20px; z-index: 500; width: 44px; height: 44px; border-radius: 50%; background: #fff; border: 1px solid var(--border); box-shadow: 0 3px 8px rgba(0,0,0,0.2); font-size: 1.2rem; cursor: pointer; }
+    #map { width: 100%; height: 100%; background: #111; }
+    .gps-btn { position: absolute; right: 14px; bottom: 20px; z-index: 500; width: 44px; height: 44px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); color: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.5); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    nav { background: #fff; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 6px 0 10px; z-index: 1000; }
-    .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--muted); font-size: 0.7rem; font-weight: 600; cursor: pointer; width: 25%; }
-    .nav-btn.active { color: var(--primary); font-weight: 700; }
-    .nav-btn.add .icon-box { background: var(--primary); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-top: -14px; border: 2px solid #fff; }
+    /* BARRA INFERIOR */
+    nav { background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 6px 0 10px; z-index: 1000; }
+    .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--muted); font-size: 0.7rem; font-weight: 700; cursor: pointer; width: 25%; font-family: inherit; }
+    .nav-btn.active { color: #fff; }
+    .nav-btn.add .icon-box { background: linear-gradient(135deg, var(--green), #059669); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-top: -16px; border: 3px solid var(--card); box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
 
-    .view { position: absolute; inset: 0; background: var(--bg); z-index: 600; display: none; flex-direction: column; overflow-y: auto; padding: 14px; }
+    /* TELAS SOBREPOSTAS */
+    .view { position: absolute; inset: 0; background: var(--bg); z-index: 600; display: none; flex-direction: column; overflow-y: auto; padding: 16px; }
     .view.active { display: flex; }
-    .leaf-card { background: #fff; border-radius: 10px; border: 1px solid var(--border); padding: 12px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .leaf-card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 12px 14px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
 
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 2000; display: none; align-items: flex-end; justify-content: center; }
+    /* MODAL SHEETS */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: flex-end; justify-content: center; }
     .modal.active { display: flex; }
-    .sheet { background: #fff; width: 100%; max-width: 480px; border-radius: 16px 16px 0 0; padding: 16px; max-height: 85vh; overflow-y: auto; }
-    .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-    .close-btn { background: #eef2eb; border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; }
+    .sheet { background: var(--card); border: 1px solid var(--border); width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 16px 18px 26px; max-height: 88vh; overflow-y: auto; }
+    .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .close-btn { background: var(--card-sub); border: 1px solid var(--border); color: var(--muted); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 0.85rem; }
 
-    .form-group { margin-bottom: 10px; }
-    label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 4px; }
-    input[type="text"], textarea { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border); font-family: inherit; font-size: 0.88rem; outline: none; }
-    textarea { resize: vertical; min-height: 50px; }
-    
+    /* FORMULÁRIO */
+    .form-group { margin-bottom: 11px; }
+    label { display: block; font-size: 0.74rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.3px; }
+    input[type="text"], textarea { width: 100%; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-sub); color: #fff; font-family: inherit; font-size: 0.86rem; outline: none; }
+    input[type="text"]:focus, textarea:focus { border-color: var(--green); }
+    textarea { resize: vertical; min-height: 48px; }
+
+    /* CARDS DE HORÁRIO INSPIRADOS NO LAYOUT */
     .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .type-card { border: 1.5px solid var(--border); border-radius: 8px; padding: 8px; text-align: center; cursor: pointer; }
-    .type-card.selected { border-color: var(--primary); background: #eef5eb; font-weight: 700; }
+    .type-card { border-radius: var(--radius); padding: 10px; text-align: left; cursor: pointer; border: 1px solid var(--border); background: var(--card-sub); position: relative; transition: 0.2s; }
+    .type-card.type-day.selected { background: linear-gradient(135deg, rgba(37,99,235,0.25), rgba(37,99,235,0.08)); border-color: var(--blue); }
+    .type-card.type-night.selected { background: linear-gradient(135deg, rgba(234,88,12,0.25), rgba(234,88,12,0.08)); border-color: var(--orange); }
+    .type-icon { font-size: 1.1rem; margin-bottom: 4px; }
+    .type-title { font-size: 0.78rem; font-weight: 700; color: #fff; }
+    .type-sub { font-size: 0.66rem; color: var(--muted); }
 
-    .photo-area { position: relative; height: 130px; border: 1.5px dashed var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: #fafcfa; }
+    /* FOTO */
+    .photo-area { position: relative; height: 110px; border: 1.5px dashed var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: var(--card-sub); }
     .photo-area img { width: 100%; height: 100%; object-fit: cover; }
-    .badge { position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,0.9); border-radius: 10px; padding: 2px 6px; font-size: 0.72rem; font-weight: 700; }
+    .badge { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.85); border-radius: var(--pill); padding: 2px 7px; font-size: 0.7rem; font-weight: 700; border: 1px solid var(--border); }
 
-    .coord-btns { display: flex; gap: 6px; margin-bottom: 4px; }
-    .coord-btns button { flex: 1; padding: 7px; border-radius: 6px; border: 1px solid var(--border); background: #f0f4ee; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
-    .coord-btns button.active { background: var(--primary); color: #fff; }
+    /* SELETOR DE LOCALIZAÇÃO (APENAS GPS OU ENDEREÇO) */
+    .loc-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--card-sub); padding: 3px; border-radius: var(--pill); margin-bottom: 8px; }
+    .loc-tab-btn { border: none; background: transparent; padding: 8px; border-radius: var(--pill); font-family: inherit; font-size: 0.74rem; font-weight: 700; color: var(--muted); cursor: pointer; }
+    .loc-tab-btn.active { background: #fff; color: #000; }
+    .loc-status { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+    .addr-row { display: flex; gap: 6px; }
 
-    .btn { width: 100%; padding: 10px; border-radius: 6px; border: none; font-weight: 700; font-size: 0.9rem; cursor: pointer; margin-top: 4px; }
-    .btn-main { background: var(--primary); color: #fff; }
-    .btn-sub { background: #e6ede2; color: var(--primary-dark); }
-    .btn-del { background: #fce8e8; color: var(--danger); }
+    /* BOTÕES */
+    .btn { width: 100%; padding: 11px; border-radius: var(--pill); border: none; font-weight: 700; font-size: 0.88rem; cursor: pointer; margin-top: 4px; font-family: inherit; }
+    .btn-main { background: var(--green); color: #000; }
+    .btn-sub { background: var(--card-sub); color: #fff; border: 1px solid var(--border); }
+    .btn-del { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.25); }
 
-    .leaf-pin { background: #fff; border: 2px solid var(--primary); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.25); position: relative; }
-    .leaf-pin .badge-icon { position: absolute; top: -5px; right: -5px; background: #fff; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-size: 9px; }
-
-    #toast { position: fixed; top: 12px; left: 50%; transform: translateX(-50%) translateY(-60px); background: var(--primary-dark); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; z-index: 3000; transition: transform 0.25s; pointer-events: none; }
+    /* PINS DO MAPA E TOAST */
+    .leaf-pin { background: var(--card); border: 2px solid #fff; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(0,0,0,0.6); position: relative; }
+    .leaf-pin .badge-icon { position: absolute; top: -4px; right: -4px; background: #000; border-radius: 50%; width: 15px; height: 15px; display: flex; align-items: center; justify-content: center; font-size: 8px; border: 1px solid #fff; }
+    #toast { position: fixed; top: 14px; left: 50%; transform: translateX(-50%) translateY(-60px); background: #fff; color: #000; padding: 6px 16px; border-radius: var(--pill); font-size: 0.76rem; font-weight: 700; z-index: 3000; transition: 0.25s; pointer-events: none; }
     #toast.show { transform: translateX(-50%) translateY(0); }
   </style>
 </head>
@@ -84,17 +106,17 @@
   <div id="toast">Aviso</div>
 
   <header>
-    <div class="header-top">
-      <div class="title">🌿 MAPA DAS FOLHAS</div>
-      <div id="stat-count" style="font-size: 0.72rem; opacity: 0.85;">0 locais</div>
+    <div class="header-bar">
+      <div class="brand">🌿 <span>Mapa das Folhas</span></div>
+      <div id="stat-count" class="badge-count">0 locais</div>
     </div>
-    <div class="search-box">
+    <div class="search-wrap">
       <input type="text" id="search-input" placeholder="Buscar folha...">
     </div>
     <div class="pills">
       <div class="pill active" data-filter="all">Todos</div>
-      <div class="pill" data-filter="movimentado">🌙 Após 00h</div>
       <div class="pill" data-filter="qualquer_horario">🕐 Qualquer horário</div>
+      <div class="pill" data-filter="movimentado">🌙 Após 00h</div>
     </div>
   </header>
 
@@ -103,13 +125,13 @@
     <button class="gps-btn" id="btn-gps" title="Minha Localização">📍</button>
 
     <div class="view" id="view-leaves">
-      <h3 style="margin-bottom: 10px; color: var(--primary);">Catálogo de Folhas</h3>
+      <h3 style="margin-bottom: 12px; font-size: 1.1rem; font-weight: 800;">Catálogo de Folhas</h3>
       <div id="leaves-list"></div>
     </div>
 
     <div class="view" id="view-settings">
-      <h3 style="margin-bottom: 10px; color: var(--primary);">Configurações</h3>
-      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 12px;">Seus dados ficam gravados localmente no navegador.</p>
+      <h3 style="margin-bottom: 8px; font-size: 1.1rem; font-weight: 800;">Configurações</h3>
+      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 14px;">Os dados ficam salvos localmente no navegador deste dispositivo.</p>
       <button class="btn btn-sub" id="btn-export">📥 Fazer Backup (JSON)</button>
       <button class="btn btn-del" id="btn-clear" style="margin-top: 10px;">🗑️ Limpar Todos os Dados</button>
     </div>
@@ -122,11 +144,11 @@
     <button class="nav-btn" data-target="settings"><span>⚙️</span><span>Ajustes</span></button>
   </nav>
 
-  <!-- Modal Adicionar / Editar -->
+  <!-- MODAL ADICIONAR / EDITAR -->
   <div class="modal" id="modal-form">
     <div class="sheet">
       <div class="sheet-head">
-        <h4 id="form-title" style="color: var(--primary);">＋ Adicionar Folha</h4>
+        <h4 id="form-title" style="font-size: 1rem; font-weight: 800;">＋ Nova Folha</h4>
         <button class="close-btn" id="form-close">✕</button>
       </div>
 
@@ -135,7 +157,7 @@
       <input type="hidden" id="f-lng">
 
       <div class="form-group">
-        <label>Nome da folha *</label>
+        <label>Nome da Planta / Folha *</label>
         <input type="text" id="f-name" placeholder="Ex: Arruda, Guiné, Alecrim">
       </div>
 
@@ -143,67 +165,81 @@
         <label>Foto</label>
         <input type="file" id="f-file" accept="image/*" capture="environment" style="display:none;">
         <div class="photo-area" id="photo-area">
-          <span id="photo-txt" style="font-size: 0.78rem; color: var(--muted);">📷 Toque para tirar/escolher foto</span>
+          <span id="photo-txt" style="font-size: 0.76rem; color: var(--muted);">📷 Toque para adicionar foto</span>
           <img id="photo-img" style="display:none;" alt="Foto">
           <span class="badge" id="photo-badge" style="display:none;">🕐</span>
         </div>
       </div>
 
       <div class="form-group">
-        <label>Tipo de Retirada *</label>
+        <label>Horário de Retirada</label>
         <div class="type-grid">
-          <div class="type-card" id="card-night">
-            <div style="font-size: 1.1rem;">🌙</div>
-            <div style="font-size: 0.75rem;">Movimentado</div>
-            <div style="font-size: 0.65rem; color: var(--muted);">Após 00h</div>
+          <div class="type-card type-day selected" id="card-day">
+            <div class="type-icon">🕐</div>
+            <div class="type-title">Qualquer Horário</div>
+            <div class="type-sub">Acesso tranquilo</div>
           </div>
-          <div class="type-card selected" id="card-day">
-            <div style="font-size: 1.1rem;">🕐</div>
-            <div style="font-size: 0.75rem;">Qualquer horário</div>
-            <div style="font-size: 0.65rem; color: var(--muted);">Tranquilo</div>
+          <div class="type-card type-night" id="card-night">
+            <div class="type-icon">🌙</div>
+            <div class="type-title">Após 00h</div>
+            <div class="type-sub">Rua movimentada</div>
           </div>
         </div>
       </div>
 
+      <!-- LOCALIZAÇÃO: GPS OU ENDEREÇO -->
       <div class="form-group">
         <label>Localização *</label>
-        <div class="coord-btns">
-          <button type="button" id="btn-use-gps" class="active">📍 Usar Meu GPS</button>
-          <button type="button" id="btn-pick-map">🗺️ Escolher no Mapa</button>
+        <div class="loc-tabs">
+          <button type="button" class="loc-tab-btn active" id="tab-use-gps">📍 Minha Localização</button>
+          <button type="button" class="loc-tab-btn" id="tab-use-addr">✍️ Digitar Endereço</button>
         </div>
-        <div id="coord-txt" style="font-size: 0.72rem; color: var(--muted); margin-top: 2px;">Coletando GPS...</div>
+
+        <div id="box-gps">
+          <button type="button" class="btn btn-sub" id="btn-refresh-gps" style="font-size: 0.8rem; padding: 8px;">🔄 Atualizar Posição Atual</button>
+          <div id="coord-txt" class="loc-status">Obtendo coordenadas do GPS...</div>
+        </div>
+
+        <div id="box-addr" style="display:none;">
+          <div class="addr-row">
+            <input type="text" id="f-address" placeholder="Ex: Rua das Flores, 100, São Paulo">
+            <button type="button" class="btn btn-sub" id="btn-search-addr" style="width: auto; padding: 0 14px; margin-top: 0;">Buscar</button>
+          </div>
+          <div id="addr-txt" class="loc-status">Digite rua, número e cidade, depois clique em Buscar.</div>
+        </div>
       </div>
 
       <div class="form-group">
         <label>Observações</label>
-        <textarea id="f-obs" placeholder="Ex: Fica próximo à árvore grande..."></textarea>
+        <textarea id="f-obs" placeholder="Ex: Próximo à calçada, muro baixo..."></textarea>
       </div>
 
-      <button class="btn btn-main" id="btn-save">💾 Salvar Local</button>
+      <button class="btn btn-main" id="btn-save">Salvar Planta</button>
+      <button class="btn btn-del" id="btn-del-form" style="display:none;" onclick="deleteCurrentForm()">🗑️ Excluir Folha</button>
     </div>
   </div>
 
-  <!-- Modal Detalhes -->
+  <!-- MODAL DETALHES -->
   <div class="modal" id="modal-details">
     <div class="sheet">
       <div class="sheet-head">
-        <h4 id="det-name" style="color: var(--primary);">Nome da Folha</h4>
+        <h4 id="det-name" style="font-size: 1.05rem; font-weight: 800;">Nome da Planta</h4>
         <button class="close-btn" id="det-close">✕</button>
       </div>
 
-      <div style="position: relative; height: 140px; border-radius: 8px; overflow: hidden; background: #e3ebd8; margin-bottom: 10px;">
+      <div style="position: relative; height: 140px; border-radius: var(--radius); overflow: hidden; background: var(--card-sub); margin-bottom: 10px;">
         <img id="det-img" style="width: 100%; height: 100%; object-fit: cover;" alt="Foto">
         <span class="badge" id="det-badge">🌙</span>
       </div>
 
-      <div id="det-dist" style="font-size: 0.8rem; font-weight: 700; color: var(--accent); margin-bottom: 6px;">Calculando...</div>
+      <div id="det-dist" style="font-size: 0.8rem; font-weight: 700; color: var(--green); margin-bottom: 6px;">Calculando...</div>
       
-      <div style="background: #f4f7f2; border-radius: 6px; padding: 8px; font-size: 0.82rem; margin-bottom: 10px;">
-        <strong>Observação:</strong>
-        <div id="det-obs" style="margin-top: 2px; color: var(--muted);">Sem observação.</div>
+      <div style="background: var(--card-sub); border-radius: 12px; padding: 10px; font-size: 0.82rem; margin-bottom: 10px; border: 1px solid var(--border);">
+        <strong style="color: var(--muted); font-size: 0.72rem; text-transform: uppercase;">Observações:</strong>
+        <div id="det-obs" style="margin-top: 4px; color: #fff;">Sem observações.</div>
       </div>
 
-      <button class="btn btn-main" id="det-route">🧭 Como Chegar (Google Maps)</button>
+      <button class="btn btn-main" id="det-route">🧭 Rota no Google Maps</button>
       <div style="display: flex; gap: 6px; margin-top: 4px;">
         <button class="btn btn-sub" id="det-edit" style="flex:1;">✏️ Editar</button>
         <button class="btn btn-del" id="det-del" style="flex:1;">🗑️ Excluir</button>
@@ -217,20 +253,12 @@
     let locations = JSON.parse(localStorage.getItem(KEY)) || [];
     let map, markersLayer, userLoc = null;
     let selectedType = 'qualquer_horario';
-    let currentPhoto = '', currentDetail = null, activeFilter = 'all', isPickingMap = false;
+    let currentPhoto = '', currentDetail = null, activeFilter = 'all';
 
     window.addEventListener('load', () => {
       map = L.map('map', { zoomControl: false }).setView([-23.5505, -46.6333], 13);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
       markersLayer = L.layerGroup().addTo(map);
-
-      map.on('click', (e) => {
-        if (isPickingMap) {
-          isPickingMap = false;
-          setFormCoords(e.latlng.lat, e.latlng.lng, '🗺️ Ponto marcado no mapa');
-          openForm();
-        }
-      });
 
       bindUI();
       getGPS(false);
@@ -288,17 +316,11 @@
       document.getElementById('photo-area').onclick = () => fileInput.click();
       fileInput.onchange = handlePhotoUpload;
 
-      document.getElementById('btn-use-gps').onclick = () => {
-        document.getElementById('btn-use-gps').classList.add('active');
-        document.getElementById('btn-pick-map').classList.remove('active');
-        getGPS(false);
-      };
-
-      document.getElementById('btn-pick-map').onclick = () => {
-        isPickingMap = true;
-        closeModals();
-        showToast('Toque no mapa para marcar o local!');
-      };
+      // Localização: GPS vs Endereço
+      document.getElementById('tab-use-gps').onclick = () => switchLocTab('gps');
+      document.getElementById('tab-use-addr').onclick = () => switchLocTab('addr');
+      document.getElementById('btn-refresh-gps').onclick = () => getGPS(false);
+      document.getElementById('btn-search-addr').onclick = geocodeAddress;
 
       document.getElementById('btn-save').onclick = saveLocation;
 
@@ -345,6 +367,39 @@
       };
     }
 
+    function switchLocTab(type) {
+      const isGps = type === 'gps';
+      document.getElementById('tab-use-gps').classList.toggle('active', isGps);
+      document.getElementById('tab-use-addr').classList.toggle('active', !isGps);
+      document.getElementById('box-gps').style.display = isGps ? 'block' : 'none';
+      document.getElementById('box-addr').style.display = !isGps ? 'block' : 'none';
+      if (isGps && !document.getElementById('f-lat').value) getGPS(false);
+    }
+
+    function geocodeAddress() {
+      const query = document.getElementById('f-address').value.trim();
+      const status = document.getElementById('addr-txt');
+      if (!query) return alert('Digite um endereço para buscar.');
+      status.textContent = 'Buscando endereço...';
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.length > 0) {
+            const lat = parseFloat(data[0].lat);
+            const lng = parseFloat(data[0].lon);
+            setFormCoords(lat, lng, `📍 Endereço: ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+            status.textContent = `Encontrado: ${data[0].display_name.split(',').slice(0, 3).join(',')}`;
+            map.setView([lat, lng], 16);
+            showToast('Endereço encontrado!');
+          } else {
+            status.textContent = '❌ Endereço não encontrado. Tente detalhar mais.';
+          }
+        })
+        .catch(() => {
+          status.textContent = '⚠️ Erro ao consultar endereço.';
+        });
+    }
+
     function getGPS(center) {
       if (!navigator.geolocation) return showToast('GPS não suportado');
       navigator.geolocation.getCurrentPosition(
@@ -353,10 +408,12 @@
           setFormCoords(userLoc.lat, userLoc.lng, `📍 GPS: ${userLoc.lat.toFixed(4)}, ${userLoc.lng.toFixed(4)}`);
           if (center) {
             map.setView([userLoc.lat, userLoc.lng], 16);
-            showToast('Centralizado na sua posição!');
+            showToast('Posição atualizada!');
           }
         },
-        () => { document.getElementById('coord-txt').textContent = '⚠️ Permissão de GPS negada'; },
+        () => {
+          document.getElementById('coord-txt').textContent = '⚠️ GPS indisponível (use a busca por endereço)';
+        },
         { enableHighAccuracy: true, timeout: 8000 }
       );
     }
@@ -370,8 +427,15 @@
     function openForm(item = null) {
       closeModals();
       const title = document.getElementById('form-title');
+      switchLocTab('gps');
+      document.getElementById('f-address').value = '';
+      document.getElementById('addr-txt').textContent = 'Digite o endereço e clique em Buscar.';
+      
+      const btnDel = document.getElementById('btn-del-form');
+
       if (item) {
-        title.textContent = '✏️ Editar Local';
+        title.textContent = '✏️ Editar Folha';
+        btnDel.style.display = 'block';
         document.getElementById('f-id').value = item.id;
         document.getElementById('f-name').value = item.name;
         document.getElementById('f-obs').value = item.obs || '';
@@ -379,15 +443,32 @@
         selectType(item.type);
         setPhotoPreview(item.photo || '');
       } else {
-        title.textContent = '＋ Adicionar Folha';
+        title.textContent = '＋ Nova Folha';
+        btnDel.style.display = 'none';
         document.getElementById('f-id').value = '';
         document.getElementById('f-name').value = '';
         document.getElementById('f-obs').value = '';
         selectType('qualquer_horario');
         setPhotoPreview('');
-        if (userLoc) setFormCoords(userLoc.lat, userLoc.lng, `📍 GPS: ${userLoc.lat.toFixed(4)}, ${userLoc.lng.toFixed(4)}`);
+        if (userLoc) {
+          setFormCoords(userLoc.lat, userLoc.lng, `📍 GPS: ${userLoc.lat.toFixed(4)}, ${userLoc.lng.toFixed(4)}`);
+        } else {
+          getGPS(false);
+        }
       }
       document.getElementById('modal-form').classList.add('active');
+    }
+
+    function deleteCurrentForm() {
+      const id = document.getElementById('f-id').value;
+      if (!id || !confirm('Deseja excluir esta folha?')) return;
+      locations = locations.filter(l => l.id !== id);
+      localStorage.setItem(KEY, JSON.stringify(locations));
+      closeModals();
+      renderMap();
+      renderStats();
+      if (document.getElementById('view-leaves').classList.contains('active')) renderLeavesView();
+      showToast('Folha excluída!');
     }
 
     function closeModals() {
@@ -409,12 +490,12 @@
         const img = new Image();
         img.onload = () => {
           const c = document.createElement('canvas');
-          let w = img.width, h = img.height, max = 600;
+          let w = img.width, h = img.height, max = 500;
           if (w > h && w > max) { h = Math.round((h * max) / w); w = max; }
           else if (h > max) { w = Math.round((w * max) / h); h = max; }
           c.width = w; c.height = h;
           c.getContext('2d').drawImage(img, 0, 0, w, h);
-          setPhotoPreview(c.toDataURL('image/jpeg', 0.6));
+          setPhotoPreview(c.toDataURL('image/jpeg', 0.65));
         };
         img.src = ev.target.result;
       };
@@ -435,13 +516,16 @@
 
     function saveLocation() {
       const name = document.getElementById('f-name').value.trim();
-      const lat = parseFloat(document.getElementById('f-lat').value);
-      const lng = parseFloat(document.getElementById('f-lng').value);
+      let lat = parseFloat(document.getElementById('f-lat').value);
+      let lng = parseFloat(document.getElementById('f-lng').value);
       const obs = document.getElementById('f-obs').value.trim();
       const id = document.getElementById('f-id').value;
 
-      if (!name) return alert('Informe o nome da folha.');
-      if (isNaN(lat) || isNaN(lng)) return alert('Coordenadas não definidas. Use o GPS.');
+      if (!name) return alert('Informe o nome da planta/folha.');
+      if (isNaN(lat) || isNaN(lng)) {
+        const c = map.getCenter();
+        lat = c.lat; lng = c.lng;
+      }
 
       if (id) {
         const i = locations.findIndex(l => l.id === id);
@@ -460,7 +544,7 @@
       renderMap();
       renderStats();
       map.setView([lat, lng], 16);
-      showToast('Local salvo!');
+      showToast('Planta salva com sucesso!');
     }
 
     function renderMap() {
@@ -473,7 +557,7 @@
 
         const isNight = loc.type === 'movimentado';
         const icon = L.divIcon({
-          className: 'pin-wrap',
+          className: '',
           html: `<div class="leaf-pin">🌿<span class="badge-icon">${isNight ? '🌙' : '🕐'}</span></div>`,
           iconSize: [32, 32],
           iconAnchor: [16, 16]
@@ -513,7 +597,7 @@
       const container = document.getElementById('leaves-list');
       container.innerHTML = '';
       if (!locations.length) {
-        container.innerHTML = '<p style="font-size:0.85rem;color:var(--muted);text-align:center;padding:20px;">Nenhuma folha cadastrada ainda.</p>';
+        container.innerHTML = '<p style="font-size:0.85rem;color:var(--muted);text-align:center;padding:24px 0;">Nenhuma folha cadastrada ainda.</p>';
         return;
       }
       const grouped = {};
@@ -525,7 +609,7 @@
       Object.keys(grouped).sort().forEach(leaf => {
         const card = document.createElement('div');
         card.className = 'leaf-card';
-        card.innerHTML = `<strong>🌿 ${leaf}</strong><span style="font-size:0.75rem;background:#eef2eb;padding:2px 8px;border-radius:10px;">${grouped[leaf]} local(is)</span>`;
+        card.innerHTML = `<strong>🌿 ${leaf}</strong><span style="font-size:0.75rem;background:var(--card-sub);padding:3px 10px;border-radius:var(--pill);color:var(--green);font-weight:700;">${grouped[leaf]} local(is)</span>`;
         card.onclick = () => {
           document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
           document.querySelector('[data-target="map"]').classList.add('active');
