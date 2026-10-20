@@ -9,114 +9,108 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090a0f;
-      --card: #141721;
-      --card-sub: #1e2230;
-      --border: rgba(255,255,255,0.08);
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --blue: #2563eb;
-      --orange: #ea580c;
-      --green: #10b981;
-      --danger: #ef4444;
-      --radius: 16px;
-      --pill: 9999px;
+      --bg:#090a0f; --card:#141721; --sub:#1e2230; --line:rgba(255,255,255,0.08);
+      --txt:#f8fafc; --muted:#94a3b8; --blue:#2563eb; --orange:#ea580c;
+      --green:#10b981; --red:#ef4444; --r:16px; --pill:9999px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+    body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--txt); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
 
-    header { background: rgba(9,10,15,0.92); backdrop-filter: blur(10px); padding: 12px 14px 8px; z-index: 1000; border-bottom: 1px solid var(--border); }
-    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .brand { font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 6px; }
-    .badge-count { background: var(--card-sub); border: 1px solid var(--border); padding: 2px 10px; border-radius: var(--pill); font-size: 0.72rem; font-weight: 700; color: var(--green); }
-    .search-box { margin-bottom: 8px; }
-    .search-box input { width: 100%; padding: 8px 14px; border-radius: var(--pill); border: 1px solid var(--border); background: var(--card); color: #fff; font-size: 0.84rem; outline: none; font-family: inherit; }
-    .search-box input::placeholder { color: #64748b; }
-    .pills { display: flex; gap: 6px; overflow-x: auto; }
-    .pill { padding: 5px 12px; font-size: 0.72rem; border-radius: var(--pill); background: var(--card); border: 1px solid var(--border); color: var(--muted); cursor: pointer; white-space: nowrap; font-weight: 600; }
-    .pill.active { background: #fff; color: #000; border-color: #fff; font-weight: 800; }
+    /* Utilitários e Layout */
+    .flex-b { display:flex; justify-content:space-between; align-items:center; }
+    .flex-c { display:flex; align-items:center; }
+    .gap-6 { gap:6px; } .gap-8 { gap:8px; } .gap-12 { gap:12px; }
+    .w-100 { width:100%; } .text-muted { color:var(--muted); }
+    .pill-tag { border-radius:var(--pill); font-size:0.72rem; font-weight:700; }
 
-    main { flex: 1; position: relative; overflow: hidden; }
-    #map { width: 100%; height: 100%; background: #090a0f; }
-    .gps-btn { position: absolute; right: 14px; bottom: 20px; z-index: 500; width: 46px; height: 46px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.5); font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    /* Topo */
+    header { background:rgba(9,10,15,0.94); backdrop-filter:blur(10px); padding:10px 14px 8px; z-index:1000; border-bottom:1px solid var(--line); }
+    .brand { font-size:1.05rem; font-weight:800; }
+    .badge-total { background:var(--sub); border:1px solid var(--line); padding:2px 10px; color:var(--green); }
+    .search-inp { padding:8px 14px; border-radius:var(--pill); border:1px solid var(--line); background:var(--card); color:#fff; font-size:0.84rem; outline:none; font-family:inherit; margin:8px 0; }
+    .filter-bar { display:flex; gap:6px; overflow-x:auto; }
+    .pill-btn { padding:5px 12px; background:var(--card); border:1px solid var(--line); color:var(--muted); cursor:pointer; white-space:nowrap; }
+    .pill-btn.active { background:#fff; color:#000; border-color:#fff; }
 
-    nav { background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 6px 0 10px; z-index: 1000; }
-    .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--muted); font-size: 0.7rem; font-weight: 700; cursor: pointer; width: 25%; font-family: inherit; }
-    .nav-btn.active { color: #fff; }
-    .nav-btn.add .icon-box { background: linear-gradient(135deg, var(--green), #059669); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-top: -16px; border: 3px solid var(--card); box-shadow: 0 4px 12px rgba(16,185,129,0.35); }
+    /* Área do Mapa */
+    main { flex:1; position:relative; overflow:hidden; }
+    #map { width:100%; height:100%; background:var(--bg); }
+    .gps-btn { position:absolute; right:14px; bottom:20px; z-index:500; width:44px; height:44px; border-radius:50%; background:var(--card); border:1px solid var(--line); color:#fff; box-shadow:0 6px 16px rgba(0,0,0,0.5); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 
-    .view { position: absolute; inset: 0; background: var(--bg); z-index: 600; display: none; flex-direction: column; overflow-y: auto; padding: 16px; }
-    .view.active { display: flex; }
+    /* Navegação Inferior */
+    nav { background:var(--card); border-top:1px solid var(--line); display:flex; justify-content:space-around; padding:6px 0 10px; z-index:1000; }
+    .nav-item { background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--muted); font-size:0.7rem; font-weight:700; cursor:pointer; width:25%; font-family:inherit; }
+    .nav-item.active { color:#fff; }
+    .nav-item.add-btn .add-icon { background:linear-gradient(135deg,var(--green),#059669); color:#fff; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin-top:-14px; border:3px solid var(--card); }
 
-    .leaf-group { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
-    .leaf-header { padding: 10px 14px; display: flex; align-items: center; gap: 12px; }
-    .leaf-photo-box { position: relative; width: 52px; height: 52px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--card-sub); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
-    .leaf-photo-box img { width: 100%; height: 100%; object-fit: cover; }
-    .leaf-photo-box .photo-cam-badge { position: absolute; bottom: 2px; right: 2px; background: rgba(0,0,0,0.8); font-size: 10px; padding: 1px 4px; border-radius: 4px; border: 1px solid var(--border); }
-    .leaf-header-info { flex: 1; cursor: pointer; user-select: none; }
-    .leaf-header-title { font-size: 0.95rem; font-weight: 800; color: #fff; display: flex; align-items: center; justify-content: space-between; }
-    .leaf-count { font-size: 0.7rem; background: var(--card-sub); padding: 2px 8px; border-radius: var(--pill); color: var(--green); font-weight: 700; }
-    .leaf-tip { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
-    
-    .leaf-items { display: none; border-top: 1px solid var(--border); background: rgba(0,0,0,0.25); }
-    .leaf-group.open .leaf-items { display: block; }
-    .addr-item { padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .addr-item:last-child { border-bottom: none; }
-    .addr-item:active { background: var(--card-sub); }
-    .addr-name { font-size: 0.82rem; font-weight: 700; color: #fff; }
-    .addr-tag { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+    /* Telas / Abas */
+    .view { position:absolute; inset:0; background:var(--bg); z-index:600; display:none; flex-direction:column; overflow-y:auto; padding:16px; }
+    .view.active { display:flex; }
 
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: flex-end; justify-content: center; }
-    .modal.active { display: flex; }
-    .sheet { background: var(--card); border: 1px solid var(--border); width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 16px 18px 24px; max-height: 88vh; overflow-y: auto; }
-    .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-    .close-btn { background: var(--card-sub); border: 1px solid var(--border); color: var(--muted); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 0.85rem; }
+    /* Catálogo e Sanfona */
+    .catalog-card { background:var(--card); border:1px solid var(--line); border-radius:var(--r); margin-bottom:10px; overflow:hidden; }
+    .card-head { padding:10px 14px; display:flex; align-items:center; gap:12px; }
+    .photo-thumb { width:48px; height:48px; border-radius:12px; border:1px solid var(--line); background:var(--sub); overflow:hidden; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; font-size:1.2rem; position:relative; }
+    .photo-thumb img { width:100%; height:100%; object-fit:cover; }
+    .head-info { flex:1; cursor:pointer; user-select:none; }
+    .accordion-list { display:none; border-top:1px solid var(--line); background:rgba(0,0,0,0.25); }
+    .catalog-card.open .accordion-list { display:block; }
+    .addr-row { padding:10px 14px; border-bottom:1px solid var(--line); cursor:pointer; }
+    .addr-row:last-child { border-bottom:none; }
+    .addr-row:active { background:var(--sub); }
 
-    .form-group { margin-bottom: 12px; }
-    label { display: block; font-size: 0.74rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.3px; }
-    input[type="text"], textarea { width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-sub); color: #fff; font-family: inherit; font-size: 0.86rem; outline: none; }
-    input[type="text"]:focus, textarea:focus { border-color: var(--green); }
-    textarea { resize: vertical; min-height: 52px; }
+    /* Modal Sheet */
+    .modal { position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); z-index:2000; display:none; align-items:flex-end; justify-content:center; }
+    .modal.active { display:flex; }
+    .sheet { background:var(--card); border:1px solid var(--line); width:100%; max-width:480px; border-radius:24px 24px 0 0; padding:16px 18px 24px; max-height:88vh; overflow-y:auto; }
+    .sheet-title { font-size:1rem; font-weight:800; }
+    .btn-close { background:var(--sub); border:1px solid var(--line); color:var(--muted); width:28px; height:28px; border-radius:50%; cursor:pointer; }
 
-    .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .type-card { border-radius: var(--radius); padding: 10px; cursor: pointer; border: 1px solid var(--border); background: var(--card-sub); transition: 0.2s; }
-    .type-card.day.selected { background: linear-gradient(135deg, rgba(37,99,235,0.25), rgba(37,99,235,0.08)); border-color: var(--blue); }
-    .type-card.night.selected { background: linear-gradient(135deg, rgba(234,88,12,0.25), rgba(234,88,12,0.08)); border-color: var(--orange); }
+    /* Formulários e Ações */
+    .field { margin-bottom:11px; }
+    .field label { display:block; font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:4px; }
+    .input-box { width:100%; padding:9px 12px; border-radius:12px; border:1px solid var(--line); background:var(--sub); color:#fff; font-family:inherit; font-size:0.86rem; outline:none; }
+    .input-box:focus { border-color:var(--green); }
+    textarea.input-box { resize:vertical; min-height:48px; }
 
-    .loc-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--card-sub); padding: 3px; border-radius: var(--pill); margin-bottom: 8px; }
-    .loc-tab-btn { border: none; background: transparent; padding: 8px; border-radius: var(--pill); font-family: inherit; font-size: 0.74rem; font-weight: 700; color: var(--muted); cursor: pointer; }
-    .loc-tab-btn.active { background: #fff; color: #000; }
-    .loc-status { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+    /* Seleção de Horário */
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .type-opt { border-radius:var(--r); padding:10px; cursor:pointer; border:1px solid var(--line); background:var(--sub); transition:0.2s; }
+    .type-opt.day.selected { background:linear-gradient(135deg,rgba(37,99,235,0.25),rgba(37,99,235,0.08)); border-color:var(--blue); }
+    .type-opt.night.selected { background:linear-gradient(135deg,rgba(234,88,12,0.25),rgba(234,88,12,0.08)); border-color:var(--orange); }
 
-    .btn { width: 100%; padding: 11px; border-radius: var(--pill); border: none; font-weight: 700; font-size: 0.88rem; cursor: pointer; margin-top: 4px; font-family: inherit; }
-    .btn-main { background: var(--green); color: #000; }
-    .btn-sub { background: var(--card-sub); color: #fff; border: 1px solid var(--border); }
-    .btn-del { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.25); }
+    /* Tabs de Localização */
+    .tab-wrap { display:grid; grid-template-columns:1fr 1fr; gap:4px; background:var(--sub); padding:3px; border-radius:var(--pill); margin-bottom:8px; }
+    .tab-btn { border:none; background:transparent; padding:7px; border-radius:var(--pill); font-family:inherit; font-size:0.72rem; font-weight:700; color:var(--muted); cursor:pointer; }
+    .tab-btn.active { background:#fff; color:#000; }
 
-    .leaf-pin { background: var(--card); border: 2px solid #fff; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.6); }
-    .leaf-pin .badge-icon { position: absolute; top: -4px; right: -4px; background: #000; border-radius: 50%; width: 15px; height: 15px; display: flex; align-items: center; justify-content: center; font-size: 8px; border: 1px solid #fff; }
-    #toast { position: fixed; top: 14px; left: 50%; transform: translateX(-50%) translateY(-60px); background: #fff; color: #000; padding: 6px 16px; border-radius: var(--pill); font-size: 0.76rem; font-weight: 700; z-index: 3000; transition: 0.25s; pointer-events: none; }
-    #toast.show { transform: translateX(-50%) translateY(0); }
+    /* Botões */
+    .btn { width:100%; padding:11px; border-radius:var(--pill); border:none; font-weight:700; font-size:0.88rem; cursor:pointer; margin-top:4px; font-family:inherit; }
+    .btn-green { background:var(--green); color:#000; }
+    .btn-sub { background:var(--sub); color:#fff; border:1px solid var(--line); }
+    .btn-del { background:rgba(239,68,68,0.15); color:var(--red); border:1px solid rgba(239,68,68,0.25); }
+
+    /* Pins e Notificação */
+    .leaf-pin { background:var(--card); border:2px solid #fff; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:0.95rem; position:relative; box-shadow:0 4px 10px rgba(0,0,0,0.6); }
+    .pin-badge { position:absolute; top:-4px; right:-4px; background:#000; border-radius:50%; width:15px; height:15px; display:flex; align-items:center; justify-content:center; font-size:8px; border:1px solid #fff; }
+    #toast { position:fixed; top:14px; left:50%; transform:translateX(-50%) translateY(-60px); background:#fff; color:#000; padding:6px 16px; border-radius:var(--pill); font-size:0.76rem; font-weight:700; z-index:3000; transition:0.25s; pointer-events:none; }
+    #toast.show { transform:translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
-
   <div id="toast">Aviso</div>
-
-  <input type="file" id="catalog-photo-input" accept="image/*" capture="environment" style="display:none;">
+  <input type="file" id="cat-photo-inp" accept="image/*" capture="environment" style="display:none;">
 
   <header>
-    <div class="header-bar">
-      <div class="brand">🌿 <span>Mapa das Folhas</span></div>
-      <div id="stat-count" class="badge-count">0 locais</div>
+    <div class="flex-b">
+      <div class="brand flex-c gap-6">🌿 <span>Mapa das Folhas</span></div>
+      <div id="total-badge" class="badge-total pill-tag">0 locais</div>
     </div>
-    <div class="search-box">
-      <input type="text" id="search-input" placeholder="Buscar folha ou rua...">
-    </div>
-    <div class="pills">
-      <div class="pill active" data-filter="all">Todos</div>
-      <div class="pill" data-filter="qualquer_horario">🕐 Qualquer horário</div>
-      <div class="pill" data-filter="movimentado">🌙 Após 00h</div>
+    <input type="text" id="search-input" class="search-inp w-100" placeholder="Buscar folha ou rua...">
+    <div class="filter-bar">
+      <div class="pill-btn pill-tag active" data-filter="all">Todos</div>
+      <div class="pill-btn pill-tag" data-filter="qualquer_horario">🕐 Qualquer horário</div>
+      <div class="pill-btn pill-tag" data-filter="movimentado">🌙 Após 00h</div>
     </div>
   </header>
 
@@ -125,296 +119,141 @@
     <button class="gps-btn" id="btn-gps" title="Minha Localização">📍</button>
 
     <div class="view" id="view-leaves">
-      <h3 style="margin-bottom: 4px; font-size: 1.1rem; font-weight: 800;">Catálogo de Folhas</h3>
-      <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 12px;">Toque na foto para definir a imagem da folha.</p>
+      <h3 style="margin-bottom:4px; font-size:1.1rem; font-weight:800;">Catálogo de Folhas</h3>
+      <p style="font-size:0.75rem; margin-bottom:12px;" class="text-muted">Toque na miniatura para trocar a foto. Toque no nome para ver as ruas.</p>
       <div id="leaves-list"></div>
     </div>
 
     <div class="view" id="view-settings">
-      <h3 style="margin-bottom: 8px; font-size: 1.1rem; font-weight: 800;">Configurações</h3>
-      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 14px;">Os dados ficam salvos localmente neste dispositivo.</p>
+      <h3 style="margin-bottom:8px; font-size:1.1rem; font-weight:800;">Configurações</h3>
+      <p style="font-size:0.8rem; margin-bottom:14px;" class="text-muted">Os dados e fotos ficam salvos localmente neste navegador.</p>
       <button class="btn btn-sub" id="btn-export">📥 Fazer Backup (JSON)</button>
-      <button class="btn btn-del" id="btn-clear" style="margin-top: 10px;">🗑️ Limpar Todos os Dados</button>
+      <button class="btn btn-del" id="btn-clear" style="margin-top:10px;">🗑️ Limpar Todos os Dados</button>
     </div>
   </main>
 
   <nav>
-    <button class="nav-btn active" data-target="map"><span>🗺️</span><span>Mapa</span></button>
-    <button class="nav-btn" data-target="leaves"><span>🌿</span><span>Folhas</span>Para evitar que o código seja cortado pelo limite de caracteres de uma única mensagem, a solução é **simplificar a estrutura de código JavaScript**, mantendo exatamente a mesma lógica funcional e o design escuro moderno inspirado no layout recebido[cite: 1].
-
-Abaixo está o arquivo **`index.html` 100% completo, do início ao fim, sem nenhum corte**.
-
-## O que foi ajustado:
-1. **Cadastro de Folha Sem Foto**: A opção de tirar/subir foto foi completamente removida do formulário de cadastro e da tela de detalhes do mapa.
-2. **Foto Exclusiva no Catálogo**: Na aba **Folhas**, cada espécie/nome de folha possui uma miniatura. Ao clicar nessa miniatura, você escolhe/tira a foto oficial daquela espécie.
-3. **Catálogo em Sanfona com Nomes de Ruas**: Clicar na planta abre a lista das ruas cadastradas. Clicar na rua leva diretamente ao ponto no mapa.
-
-```html
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Mapa das Folhas</title>
-  <link rel="stylesheet" href="[https://unpkg.com/leaflet@1.9.4/dist/leaflet.css](https://unpkg.com/leaflet@1.9.4/dist/leaflet.css)" />
-  <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
-  <link href="[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap)" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #090a0f;
-      --card: #141721;
-      --card-sub: #1e2230;
-      --border: rgba(255,255,255,0.08);
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --blue: #2563eb;
-      --orange: #ea580c;
-      --green: #10b981;
-      --danger: #ef4444;
-      --radius: 16px;
-      --pill: 9999px;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-
-    header { background: rgba(9,10,15,0.92); backdrop-filter: blur(10px); padding: 12px 14px 8px; z-index: 1000; border-bottom: 1px solid var(--border); }
-    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .brand { font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 6px; }
-    .badge-count { background: var(--card-sub); border: 1px solid var(--border); padding: 2px 10px; border-radius: var(--pill); font-size: 0.72rem; font-weight: 700; color: var(--green); }
-    .search-box { margin-bottom: 8px; }
-    .search-box input { width: 100%; padding: 8px 14px; border-radius: var(--pill); border: 1px solid var(--border); background: var(--card); color: #fff; font-size: 0.84rem; outline: none; font-family: inherit; }
-    .search-box input::placeholder { color: #64748b; }
-    .pills { display: flex; gap: 6px; overflow-x: auto; }
-    .pill { padding: 5px 12px; font-size: 0.72rem; border-radius: var(--pill); background: var(--card); border: 1px solid var(--border); color: var(--muted); cursor: pointer; white-space: nowrap; font-weight: 600; }
-    .pill.active { background: #fff; color: #000; border-color: #fff; font-weight: 800; }
-
-    main { flex: 1; position: relative; overflow: hidden; }
-    #map { width: 100%; height: 100%; background: #090a0f; }
-    .gps-btn { position: absolute; right: 14px; bottom: 20px; z-index: 500; width: 46px; height: 46px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.5); font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-    nav { background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 6px 0 10px; z-index: 1000; }
-    .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--muted); font-size: 0.7rem; font-weight: 700; cursor: pointer; width: 25%; font-family: inherit; }
-    .nav-btn.active { color: #fff; }
-    .nav-btn.add .icon-box { background: linear-gradient(135deg, var(--green), #059669); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-top: -16px; border: 3px solid var(--card); box-shadow: 0 4px 12px rgba(16,185,129,0.35); }
-
-    .view { position: absolute; inset: 0; background: var(--bg); z-index: 600; display: none; flex-direction: column; overflow-y: auto; padding: 16px; }
-    .view.active { display: flex; }
-
-    .leaf-group { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
-    .leaf-header { padding: 10px 14px; display: flex; align-items: center; gap: 12px; }
-    .leaf-photo-box { position: relative; width: 48px; height: 48px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--card-sub); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; font-size: 1.2rem; }
-    .leaf-photo-box img { width: 100%; height: 100%; object-fit: cover; }
-    .leaf-header-info { flex: 1; cursor: pointer; user-select: none; }
-    .leaf-header-title { font-size: 0.95rem; font-weight: 800; color: #fff; display: flex; align-items: center; justify-content: space-between; }
-    .leaf-count { font-size: 0.7rem; background: var(--card-sub); padding: 2px 8px; border-radius: var(--pill); color: var(--green); font-weight: 700; }
-    
-    .leaf-items { display: none; border-top: 1px solid var(--border); background: rgba(0,0,0,0.25); }
-    .leaf-group.open .leaf-items { display: block; }
-    .addr-item { padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .addr-item:last-child { border-bottom: none; }
-    .addr-item:active { background: var(--card-sub); }
-    .addr-name { font-size: 0.82rem; font-weight: 700; color: #fff; }
-    .addr-tag { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
-
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: flex-end; justify-content: center; }
-    .modal.active { display: flex; }
-    .sheet { background: var(--card); border: 1px solid var(--border); width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 16px 18px 24px; max-height: 88vh; overflow-y: auto; }
-    .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-    .close-btn { background: var(--card-sub); border: 1px solid var(--border); color: var(--muted); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 0.85rem; }
-
-    .form-group { margin-bottom: 12px; }
-    label { display: block; font-size: 0.74rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.3px; }
-    input[type="text"], textarea { width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--card-sub); color: #fff; font-family: inherit; font-size: 0.86rem; outline: none; }
-    input[type="text"]:focus, textarea:focus { border-color: var(--green); }
-    textarea { resize: vertical; min-height: 52px; }
-
-    .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .type-card { border-radius: var(--radius); padding: 10px; cursor: pointer; border: 1px solid var(--border); background: var(--card-sub); transition: 0.2s; }
-    .type-card.day.selected { background: linear-gradient(135deg, rgba(37,99,235,0.25), rgba(37,99,235,0.08)); border-color: var(--blue); }
-    .type-card.night.selected { background: linear-gradient(135deg, rgba(234,88,12,0.25), rgba(234,88,12,0.08)); border-color: var(--orange); }
-
-    .loc-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--card-sub); padding: 3px; border-radius: var(--pill); margin-bottom: 8px; }
-    .loc-tab-btn { border: none; background: transparent; padding: 8px; border-radius: var(--pill); font-family: inherit; font-size: 0.74rem; font-weight: 700; color: var(--muted); cursor: pointer; }
-    .loc-tab-btn.active { background: #fff; color: #000; }
-    .loc-status { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
-
-    .btn { width: 100%; padding: 11px; border-radius: var(--pill); border: none; font-weight: 700; font-size: 0.88rem; cursor: pointer; margin-top: 4px; font-family: inherit; }
-    .btn-main { background: var(--green); color: #000; }
-    .btn-sub { background: var(--card-sub); color: #fff; border: 1px solid var(--border); }
-    .btn-del { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.25); }
-
-    .leaf-pin { background: var(--card); border: 2px solid #fff; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.6); }
-    .leaf-pin .badge-icon { position: absolute; top: -4px; right: -4px; background: #000; border-radius: 50%; width: 15px; height: 15px; display: flex; align-items: center; justify-content: center; font-size: 8px; border: 1px solid #fff; }
-    #toast { position: fixed; top: 14px; left: 50%; transform: translateX(-50%) translateY(-60px); background: #fff; color: #000; padding: 6px 16px; border-radius: var(--pill); font-size: 0.76rem; font-weight: 700; z-index: 3000; transition: 0.25s; pointer-events: none; }
-    #toast.show { transform: translateX(-50%) translateY(0); }
-  </style>
-</head>
-<body>
-
-  <div id="toast">Aviso</div>
-
-  <input type="file" id="catalog-photo-input" accept="image/*" capture="environment" style="display:none;">
-
-  <header>
-    <div class="header-bar">
-      <div class="brand">🌿 <span>Mapa das Folhas</span></div>
-      <div id="stat-count" class="badge-count">0 locais</div>
-    </div>
-    <div class="search-box"><input type="text" id="search-input" placeholder="Buscar folha ou rua..."></div>
-    <div class="pills">
-      <div class="pill active" data-filter="all">Todos</div>
-      <div class="pill" data-filter="qualquer_horario">🕐 Qualquer horário</div>
-      <div class="pill" data-filter="movimentado">🌙 Após 00h</div>
-    </div>
-  </header>
-
-  <main>
-    <div id="map"></div>
-    <button class="gps-btn" id="btn-gps" title="Minha Localização">📍</button>
-
-    <div class="view" id="view-leaves">
-      <h3 style="margin-bottom: 4px; font-size: 1.1rem; font-weight: 800;">Catálogo de Folhas</h3>
-      <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 12px;">Toque na imagem da folha para adicionar ou trocar a foto.</p>
-      <div id="leaves-list"></div>
-    </div>
-
-    <div class="view" id="view-settings">
-      <h3 style="margin-bottom: 8px; font-size: 1.1rem; font-weight: 800;">Configurações</h3>
-      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 14px;">Os dados ficam salvos localmente neste dispositivo.</p>
-      <button class="btn btn-sub" id="btn-export">📥 Fazer Backup (JSON)</button>
-      <button class="btn btn-del" id="btn-clear" style="margin-top: 10px;">🗑️ Limpar Todos os Dados</button>
-    </div>
-  </main>
-
-  <nav>
-    <button class="nav-btn active" data-target="map"><span>🗺️</span><span>Mapa</span></button>
-    <button class="nav-btn" data-target="leaves"><span>🌿</span><span>Folhas</span></button>
-    <button class="nav-btn add" id="nav-add"><div class="icon-box">＋</div><span>Adicionar</span></button>
-    <button class="nav-btn" data-target="settings"><span>⚙️</span><span>Ajustes</span></button>
+    <button class="nav-item active" data-target="map"><span>🗺️</span><span>Mapa</span></button>
+    <button class="nav-item" data-target="leaves"><span>🌿</span><span>Folhas</span></button>
+    <button class="nav-item add-btn" id="nav-add"><div class="add-icon">＋</div><span>Adicionar</span></button>
+    <button class="nav-item" data-target="settings"><span>⚙️</span><span>Ajustes</span></button>
   </nav>
 
+  <!-- MODAL CADASTRO (SEM FOTO) -->
   <div class="modal" id="modal-form">
     <div class="sheet">
-      <div class="sheet-head">
-        <h4 id="form-title" style="font-size: 1rem; font-weight: 800;">＋ Nova Folha</h4>
-        <button class="close-btn" onclick="closeModals()">✕</button>
+      <div class="flex-b" style="margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);">
+        <h4 id="form-title" class="sheet-title">＋ Nova Folha</h4>
+        <button class="btn-close" onclick="closeModals()">✕</button>
       </div>
+      <input type="hidden" id="f-id"><input type="hidden" id="f-lat"><input type="hidden" id="f-lng">
 
-      <input type="hidden" id="f-id">
-      <input type="hidden" id="f-lat">
-      <input type="hidden" id="f-lng">
-
-      <div class="form-group">
+      <div class="field">
         <label>Nome da Planta / Folha *</label>
-        <input type="text" id="f-name" placeholder="Ex: Arruda, Guiné, Alecrim">
+        <input type="text" id="f-name" class="input-box" placeholder="Ex: Arruda, Guiné, Alecrim">
       </div>
 
-      <div class="form-group">
+      <div class="field">
         <label>Horário de Retirada</label>
-        <div class="type-grid">
-          <div class="type-card day selected" id="card-day" onclick="selectType('qualquer_horario')">
-            <div style="font-size: 1.1rem; margin-bottom: 2px;">🕐</div>
-            <div style="font-size: 0.78rem; font-weight: 700;">Qualquer Horário</div>
-            <div style="font-size: 0.66rem; color: var(--muted);">Tranquilo</div>
+        <div class="grid-2">
+          <div class="type-opt day selected" id="opt-day" onclick="setType('qualquer_horario')">
+            <div style="font-size:1.1rem; margin-bottom:2px;">🕐</div>
+            <div style="font-size:0.78rem; font-weight:700;">Qualquer Horário</div>
+            <div style="font-size:0.66rem;" class="text-muted">Acesso tranquilo</div>
           </div>
-          <div class="type-card night" id="card-night" onclick="selectType('movimentado')">
-            <div style="font-size: 1.1rem; margin-bottom: 2px;">🌙</div>
-            <div style="font-size: 0.78rem; font-weight: 700;">Após 00h</div>
-            <div style="font-size: 0.66rem; color: var(--muted);">Movimentado</div>
+          <div class="type-opt night" id="opt-night" onclick="setType('movimentado')">
+            <div style="font-size:1.1rem; margin-bottom:2px;">🌙</div>
+            <div style="font-size:0.78rem; font-weight:700;">Após 00h</div>
+            <div style="font-size:0.66rem;" class="text-muted">Rua movimentada</div>
           </div>
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="field">
         <label>Localização (Rua) *</label>
-        <div class="loc-tabs">
-          <button type="button" class="loc-tab-btn active" id="tab-gps" onclick="switchLoc('gps')">📍 Minha Localização</button>
-          <button type="button" class="loc-tab-btn" id="tab-addr" onclick="switchLoc('addr')">✍️ Digitar Rua</button>
+        <div class="tab-wrap">
+          <button type="button" class="tab-btn active" id="tab-gps" onclick="setLocMode('gps')">📍 Minha Localização</button>
+          <button type="button" class="tab-btn" id="tab-addr" onclick="setLocMode('addr')">✍️ Digitar Rua</button>
         </div>
-
         <div id="panel-gps">
-          <button type="button" class="btn btn-sub" onclick="getGPS(false)" style="font-size: 0.8rem; padding: 8px;">🔄 Atualizar Posição e Obter Rua</button>
-          <div id="coord-txt" class="loc-status">Obtendo rua pelo GPS...</div>
+          <button type="button" class="btn btn-sub" onclick="getGPS(false)" style="font-size:0.8rem; padding:8px;">🔄 Atualizar e Detectar Rua</button>
+          <div id="coord-txt" style="font-size:0.72rem; margin-top:4px;" class="text-muted">Obtendo rua pelo GPS...</div>
         </div>
-
         <div id="panel-addr" style="display:none;">
-          <div style="display:flex; gap:6px;">
-            <input type="text" id="f-address" placeholder="Ex: Rua das Flores, 100, São Paulo">
+          <div class="flex-c gap-6">
+            <input type="text" id="f-address" class="input-box" placeholder="Ex: Rua das Flores, 100, São Paulo">
             <button type="button" class="btn btn-sub" onclick="searchAddress()" style="width:auto; padding:0 14px; margin-top:0;">Buscar</button>
           </div>
-          <div id="addr-txt" class="loc-status">Digite a rua e clique em Buscar.</div>
+          <div id="addr-txt" style="font-size:0.72rem; margin-top:4px;" class="text-muted">Digite a rua e clique em Buscar.</div>
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="field">
         <label>Observações</label>
-        <textarea id="f-obs" placeholder="Ex: Próximo à árvore, muro baixo..."></textarea>
+        <textarea id="f-obs" class="input-box" placeholder="Ex: Próximo à árvore, muro baixo..."></textarea>
       </div>
 
-      <button class="btn btn-main" onclick="saveLocation()">Salvar Planta</button>
-      <button class="btn btn-del" id="btn-del-form" style="display:none;" onclick="deleteCurrentForm()">🗑️ Excluir Folha</button>
+      <button class="btn btn-green" onclick="saveData()">Salvar Planta</button>
+      <button class="btn btn-del" id="btn-del-form" style="display:none;" onclick="deleteForm()">🗑️ Excluir Folha</button>
     </div>
   </div>
 
+  <!-- MODAL DETALHES -->
   <div class="modal" id="modal-details">
     <div class="sheet">
-      <div class="sheet-head">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <h4 id="det-name" style="font-size: 1.05rem; font-weight: 800;">Nome</h4>
-          <span id="det-badge" style="font-size: 0.72rem; background:var(--card-sub); border:1px solid var(--border); padding:2px 8px; border-radius:var(--pill);">🕐</span>
+      <div class="flex-b" style="margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);">
+        <div class="flex-c gap-8">
+          <h4 id="det-name" class="sheet-title">Nome</h4>
+          <span id="det-badge" class="pill-tag" style="background:var(--sub); border:1px solid var(--line); padding:2px 8px;">🕐</span>
         </div>
-        <button class="close-btn" onclick="closeModals()">✕</button>
+        <button class="btn-close" onclick="closeModals()">✕</button>
       </div>
-      
-      <div id="det-street" style="font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 4px;"></div>
-      <div id="det-dist" style="font-size: 0.76rem; font-weight: 600; color: var(--green); margin-bottom: 12px;"></div>
-      
-      <div style="background:var(--card-sub); border-radius:12px; padding:12px; font-size:0.82rem; margin-bottom:12px; border:1px solid var(--border);">
-        <strong style="color:var(--muted); font-size:0.72rem; text-transform:uppercase;">Observações:</strong>
+      <div id="det-street" style="font-size:0.92rem; font-weight:800; margin-bottom:4px;"></div>
+      <div id="det-dist" style="font-size:0.76rem; font-weight:600; color:var(--green); margin-bottom:12px;"></div>
+      <div style="background:var(--sub); border-radius:12px; padding:12px; font-size:0.82rem; margin-bottom:12px; border:1px solid var(--line);">
+        <strong class="text-muted" style="font-size:0.72rem; text-transform:uppercase;">Observações:</strong>
         <div id="det-obs" style="margin-top:4px; color:#fff;"></div>
       </div>
-      
-      <button class="btn btn-main" onclick="openRoute()">🧭 Rota no Google Maps</button>
-      <div style="display:flex; gap:6px; margin-top:4px;">
-        <button class="btn btn-sub" onclick="editCurrent()" style="flex:1;">✏️ Editar</button>
-        <button class="btn btn-del" onclick="deleteCurrent()" style="flex:1;">🗑️ Excluir</button>
+      <button class="btn btn-green" onclick="openRoute()">🧭 Rota no Google Maps</button>
+      <div class="flex-c gap-6" style="margin-top:4px;">
+        <button class="btn btn-sub" onclick="editDetail()" style="flex:1;">✏️ Editar</button>
+        <button class="btn btn-del" onclick="deleteDetail()" style="flex:1;">🗑️ Excluir</button>
       </div>
     </div>
   </div>
 
-  <script src="[https://unpkg.com/leaflet@1.9.4/dist/leaflet.js](https://unpkg.com/leaflet@1.9.4/dist/leaflet.js)"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const KEY = 'mapa_folhas_v1', KEY_PHOTOS = 'mapa_folhas_fotos_v1';
-    let locations = JSON.parse(localStorage.getItem(KEY)) || [];
-    let leafPhotos = JSON.parse(localStorage.getItem(KEY_PHOTOS)) || {};
-    let map, markersLayer, userLoc = null;
-    let selectedType = 'qualquer_horario', currentDetail = null, activeFilter = 'all', detectedStreet = '', targetPhotoLeaf = null;
+    const K_LOC = 'mapa_folhas_v1', K_FOTO = 'mapa_folhas_fotos_v1';
+    let locations = JSON.parse(localStorage.getItem(K_LOC)) || [];
+    let leafPhotos = JSON.parse(localStorage.getItem(K_FOTO)) || {};
+    let map, markersLayer, userLoc = null, curType = 'qualquer_horario', curDetail = null, activeFilter = 'all', detectedStreet = '', targetPhotoKey = null;
 
     window.onload = () => {
-      map = L.map('map', { zoomControl: false }).setView([-23.5505, -46.6333], 13);
+      map = L.map('map', { zoomControl:false }).setView([-23.5505, -46.6333], 13);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
       markersLayer = L.layerGroup().addTo(map);
 
       document.getElementById('btn-gps').onclick = () => getGPS(true);
-      document.getElementById('search-input').oninput = () => renderMap();
+      document.getElementById('search-input').oninput = renderMap;
 
-      document.querySelectorAll('.pill').forEach(p => {
+      document.querySelectorAll('.pill-btn').forEach(p => {
         p.onclick = () => {
-          document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+          document.querySelectorAll('.pill-btn').forEach(x => x.classList.remove('active'));
           p.classList.add('active');
           activeFilter = p.dataset.filter;
           renderMap();
         };
       });
 
-      document.querySelectorAll('.nav-btn').forEach(b => {
+      document.querySelectorAll('.nav-item').forEach(b => {
         b.onclick = () => {
           if (b.id === 'nav-add') { openForm(); return; }
-          document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
+          document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
           b.classList.add('active');
           document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
           const t = b.dataset.target;
-          if (t === 'leaves') { renderLeavesView(); document.getElementById('view-leaves').classList.add('active'); }
+          if (t === 'leaves') { renderCatalog(); document.getElementById('view-leaves').classList.add('active'); }
           else if (t === 'settings') { document.getElementById('view-settings').classList.add('active'); }
           else { setTimeout(() => map.invalidateSize(), 200); }
         };
@@ -422,21 +261,21 @@ Abaixo está o arquivo **`index.html` 100% completo, do início ao fim, sem nenh
 
       document.getElementById('btn-export').onclick = () => {
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([JSON.stringify({ locations, leafPhotos }, null, 2)], { type: 'application/json' }));
+        a.href = URL.createObjectURL(new Blob([JSON.stringify({ locations, leafPhotos }, null, 2)], { type:'application/json' }));
         a.download = 'backup-folhas.json'; a.click();
       };
 
       document.getElementById('btn-clear').onclick = () => {
         if (confirm('Deseja apagar todos os dados e fotos?')) {
           locations = []; leafPhotos = {};
-          localStorage.removeItem(KEY); localStorage.removeItem(KEY_PHOTOS);
-          closeModals(); renderMap(); renderStats(); renderLeavesView(); toast('Dados apagados!');
+          localStorage.removeItem(K_LOC); localStorage.removeItem(K_FOTO);
+          closeModals(); renderMap(); renderTotals(); renderCatalog(); toast('Dados apagados!');
         }
       };
 
-      document.getElementById('catalog-photo-input').onchange = handleCatalogPhoto;
+      document.getElementById('cat-photo-inp').onchange = saveCatalogPhoto;
 
-      getGPS(false); renderMap(); renderStats();
+      getGPS(false); renderMap(); renderTotals();
     };
 
     function toast(m) {
@@ -445,40 +284,40 @@ Abaixo está o arquivo **`index.html` 100% completo, do início ao fim, sem nenh
       setTimeout(() => t.classList.remove('show'), 2000);
     }
 
-    function selectType(t) {
-      selectedType = t;
-      document.getElementById('card-night').classList.toggle('selected', t === 'movimentado');
-      document.getElementById('card-day').classList.toggle('selected', t === 'qualquer_horario');
+    function setType(t) {
+      curType = t;
+      document.getElementById('opt-night').classList.toggle('selected', t === 'movimentado');
+      document.getElementById('opt-day').classList.toggle('selected', t === 'qualquer_horario');
     }
 
-    function switchLoc(m) {
-      const g = m === 'gps';
-      document.getElementById('tab-gps').classList.toggle('active', g);
-      document.getElementById('tab-addr').classList.toggle('active', !g);
-      document.getElementById('panel-gps').style.display = g ? 'block' : 'none';
-      document.getElementById('panel-addr').style.display = !g ? 'block' : 'none';
-      if (g && !document.getElementById('f-lat').value) getGPS(false);
+    function setLocMode(m) {
+      const isGps = m === 'gps';
+      document.getElementById('tab-gps').classList.toggle('active', isGps);
+      document.getElementById('tab-addr').classList.toggle('active', !isGps);
+      document.getElementById('panel-gps').style.display = isGps ? 'block' : 'none';
+      document.getElementById('panel-addr').style.display = !isGps ? 'block' : 'none';
+      if (isGps && !document.getElementById('f-lat').value) getGPS(false);
     }
 
-    function parseStreet(item) {
-      if (!item) return '';
-      const a = item.address;
+    function parseRoad(it) {
+      if (!it) return '';
+      const a = it.address;
       if (a) {
         const r = a.road || a.street || a.pedestrian || a.avenue;
         if (r) return r + (a.house_number ? `, ${a.house_number}` : '');
       }
-      return (item.display_name || '').split(',')[0].trim();
+      return (it.display_name || '').split(',')[0].trim();
     }
 
     function searchAddress() {
       const q = document.getElementById('f-address').value.trim(), s = document.getElementById('addr-txt');
       if (!q) return alert('Digite a rua.');
       s.textContent = 'Buscando rua...';
-      fetch(`[https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=$](https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=$){encodeURIComponent(q)}&limit=1`)
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(q)}&limit=1`)
         .then(r => r.json()).then(d => {
           if (d && d.length) {
             const lat = parseFloat(d[0].lat), lng = parseFloat(d[0].lon);
-            detectedStreet = parseStreet(d[0]) || q;
+            detectedStreet = parseRoad(d[0]) || q;
             setCoords(lat, lng, `📍 Rua: ${detectedStreet}`);
             s.textContent = `Encontrado: ${detectedStreet}`;
             map.setView([lat, lng], 16); toast('Rua localizada!');
@@ -486,22 +325,22 @@ Abaixo está o arquivo **`index.html` 100% completo, do início ao fim, sem nenh
         }).catch(() => { s.textContent = '⚠️ Erro ao consultar.'; });
     }
 
-    function reverseGeocode(lat, lng, cb) {
-      fetch(`[https://nominatim.openstreetmap.org/reverse?format=json&lat=$](https://nominatim.openstreetmap.org/reverse?format=json&lat=$){lat}&lon=${lng}&zoom=18&addressdetails=1`)
-        .then(r => r.json()).then(d => cb(parseStreet(d) || `Rua próxima (${lat.toFixed(4)}, ${lng.toFixed(4)})`))
+    function reverseRoad(lat, lng, cb) {
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+        .then(r => r.json()).then(d => cb(parseRoad(d) || `Rua próxima (${lat.toFixed(4)}, ${lng.toFixed(4)})`))
         .catch(() => cb(`Local (${lat.toFixed(4)}, ${lng.toFixed(4)})`));
     }
 
-    function getGPS(c) {
+    function getGPS(center) {
       if (!navigator.geolocation) return toast('GPS indisponível');
       navigator.geolocation.getCurrentPosition(p => {
         userLoc = { lat: p.coords.latitude, lng: p.coords.longitude };
-        reverseGeocode(userLoc.lat, userLoc.lng, st => {
+        reverseRoad(userLoc.lat, userLoc.lng, st => {
           detectedStreet = st;
           setCoords(userLoc.lat, userLoc.lng, `📍 Rua: ${detectedStreet}`);
         });
-        if (c) { map.setView([userLoc.lat, userLoc.lng], 16); toast('Posição centralizada!'); }
-      }, () => { document.getElementById('coord-txt').textContent = '⚠️ GPS não disponível'; }, { enableHighAccuracy: true, timeout: 8000 });
+        if (center) { map.setView([userLoc.lat, userLoc.lng], 16); toast('Posição centralizada!'); }
+      }, () => { document.getElementById('coord-txt').textContent = '⚠️ GPS indisponível'; }, { enableHighAccuracy:true, timeout:8000 });
     }
 
     function setCoords(lat, lng, txt) {
@@ -511,30 +350,30 @@ Abaixo está o arquivo **`index.html` 100% completo, do início ao fim, sem nenh
     }
 
     function openForm(item = null) {
-      closeModals(); switchLoc('gps');
+      closeModals(); setLocMode('gps');
       document.getElementById('f-address').value = '';
       document.getElementById('addr-txt').textContent = 'Digite a rua e clique em Buscar.';
-      const bd = document.getElementById('btn-del-form');
+      const btnDel = document.getElementById('btn-del-form');
       if (item) {
         document.getElementById('form-title').textContent = '✏️ Editar Folha';
-        bd.style.display = 'block';
+        btnDel.style.display = 'block';
         document.getElementById('f-id').value = item.id;
         document.getElementById('f-name').value = item.name;
         document.getElementById('f-obs').value = item.obs || '';
         detectedStreet = item.street || '';
         setCoords(item.lat, item.lng, `📍 Rua: ${detectedStreet}`);
-        selectType(item.type);
+        setType(item.type);
       } else {
         document.getElementById('form-title').textContent = '＋ Nova Folha';
-        bd.style.display = 'none';
+        btnDel.style.display = 'none';
         document.getElementById('f-id').value = '';
         document.getElementById('f-name').value = '';
         document.getElementById('f-obs').value = '';
         detectedStreet = '';
-        selectType('qualquer_horario');
+        setType('qualquer_horario');
         if (userLoc) {
           setCoords(userLoc.lat, userLoc.lng, 'Obtendo rua...');
-          reverseGeocode(userLoc.lat, userLoc.lng, st => {
+          reverseRoad(userLoc.lat, userLoc.lng, st => {
             detectedStreet = st; setCoords(userLoc.lat, userLoc.lng, `📍 Rua: ${detectedStreet}`);
           });
         } else { getGPS(false); }
@@ -546,26 +385,27 @@ Abaixo está o arquivo **`index.html` 100% completo, do início ao fim, sem nenh
       document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
     }
 
-    function saveLocation() {
-      const n = document.getElementById('f-name').value.trim();
+    function saveData() {
+      const name = document.getElementById('f-name').value.trim();
       let lat = parseFloat(document.getElementById('f-lat').value);
       let lng = parseFloat(document.getElementById('f-lng').value);
-      const obs = document.getElementById('f-obs').value.trim(), id = document.getElementById('f-id').value;
+      const obs = document.getElementById('f-obs').value.trim();
+      const id = document.getElementById('f-id').value;
 
-      if (!n) return alert('Informe o nome da planta.');
+      if (!name) return alert('Informe o nome da planta.');
       if (isNaN(lat) || isNaN(lng)) { const c = map.getCenter(); lat = c.lat; lng = c.lng; }
 
       const street = detectedStreet || document.getElementById('f-address').value.trim() || `Rua sem nome (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
 
       if (id) {
-        const idx = locations.findIndex(x => x.id === id);
-        if (idx !== -1) locations[idx] = { ...locations[idx], name: n, lat, lng, obs, street, type: selectedType };
+        const i = locations.findIndex(x => x.id === id);
+        if (i !== -1) locations[i] = { ...locations[i], name, lat, lng, obs, street, type: curType };
       } else {
-        locations.push({ id: 'f_' + Date.now(), name: n, lat, lng, obs, street, type: selectedType });
+        locations.push({ id:'f_' + Date.now(), name, lat, lng, obs, street, type: curType });
       }
 
-      localStorage.setItem(KEY, JSON.stringify(locations));
-      closeModals(); renderMap(); renderStats(); map.setView([lat, lng], 16); toast('Planta salva!');
+      localStorage.setItem(K_LOC, JSON.stringify(locations));
+      closeModals(); renderMap(); renderTotals(); map.setView([lat, lng], 16); toast('Planta salva!');
     }
 
     function renderMap() {
@@ -575,9 +415,9 @@ Abaixo está o arquivo **`index.html` 100% completo, do início ao fim, sem nenh
         if (activeFilter !== 'all' && l.type !== activeFilter) return;
         if (q && !l.name.toLowerCase().includes(q) && !(l.street || '').toLowerCase().includes(q)) return;
         const icon = L.divIcon({
-          className: '',
-          html: `<div class="leaf-pin">🌿<span class="badge-icon">${l.type === 'movimentado' ? '🌙' : '🕐'}</span></div>`,
-          iconSize: [32, 32], iconAnchor: [16, 16]
+          className:'',
+          html:`<div class="leaf-pin">🌿<span class="pin-badge">${l.type === 'movimentado' ? '🌙' : '🕐'}</span></div>`,
+          iconSize:[32, 32], iconAnchor:[16, 16]
         });
         const m = L.marker([l.lat, l.lng], { icon });
         m.on('click', () => openDetails(l));
@@ -585,55 +425,54 @@ Abaixo está o arquivo **`index.html` 100% completo, do início ao fim, sem nenh
       });
     }
 
-    function openDetails(item) {
-      currentDetail = item;
-      document.getElementById('det-name').textContent = item.name;
-      document.getElementById('det-badge').textContent = item.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário';
-      document.getElementById('det-street').textContent = `📍 ${item.street || 'Rua sem nome'}`;
-      document.getElementById('det-obs').textContent = item.obs || 'Nenhuma observação cadastrada.';
+    function openDetails(it) {
+      curDetail = it;
+      document.getElementById('det-name').textContent = it.name;
+      document.getElementById('det-badge').textContent = it.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário';
+      document.getElementById('det-street').textContent = `📍 ${it.street || 'Rua sem identificação'}`;
+      document.getElementById('det-obs').textContent = it.obs || 'Nenhuma observação cadastrada.';
 
       if (userLoc) {
-        const d = calcDistance(userLoc.lat, userLoc.lng, item.lat, item.lng);
+        const d = dist(userLoc.lat, userLoc.lng, it.lat, it.lng);
         document.getElementById('det-dist').textContent = `${d < 1 ? Math.round(d * 1000) + ' metros' : d.toFixed(1) + ' km'} de você`;
       } else {
-        document.getElementById('det-dist').textContent = `${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}`;
+        document.getElementById('det-dist').textContent = `${it.lat.toFixed(4)}, ${it.lng.toFixed(4)}`;
       }
       document.getElementById('modal-details').classList.add('active');
     }
 
-    function triggerPhotoForLeaf(leafName) {
-      targetPhotoLeaf = leafName.trim().toUpperCase();
-      document.getElementById('catalog-photo-input').click();
+    function promptPhoto(leafKey) {
+      targetPhotoKey = leafKey.trim().toUpperCase();
+      document.getElementById('cat-photo-inp').click();
     }
 
-    function handleCatalogPhoto(e) {
+    function saveCatalogPhoto(e) {
       const f = e.target.files[0];
-      if (!f || !targetPhotoLeaf) return;
+      if (!f || !targetPhotoKey) return;
       const r = new FileReader();
       r.onload = ev => {
         const img = new Image();
         img.onload = () => {
           const cvs = document.createElement('canvas');
-          let w = img.width, h = img.height, max = 300;
+          let w = img.width, h = img.height, max = 320;
           if (w > h && w > max) { h = Math.round((h * max) / w); w = max; }
           else if (h > max) { w = Math.round((w * max) / h); h = max; }
           cvs.width = w; cvs.height = h;
           cvs.getContext('2d').drawImage(img, 0, 0, w, h);
-          leafPhotos[targetPhotoLeaf] = cvs.toDataURL('image/jpeg', 0.65);
-          localStorage.setItem(KEY_PHOTOS, JSON.stringify(leafPhotos));
-          renderLeavesView();
-          toast('Foto da folha atualizada!');
+          leafPhotos[targetPhotoKey] = cvs.toDataURL('image/jpeg', 0.65);
+          localStorage.setItem(K_FOTO, JSON.stringify(leafPhotos));
+          renderCatalog(); toast('Foto atualizada!');
         };
         img.src = ev.target.result;
       };
       r.readAsDataURL(f);
     }
 
-    function renderLeavesView() {
-      const c = document.getElementById('leaves-list');
-      c.innerHTML = '';
+    function renderCatalog() {
+      const list = document.getElementById('leaves-list');
+      list.innerHTML = '';
       if (!locations.length) {
-        c.innerHTML = '<p style="font-size:0.8rem;color:var(--muted);text-align:center;padding:24px 0;">Nenhuma folha cadastrada ainda.</p>';
+        list.innerHTML = '<p class="text-muted" style="font-size:0.8rem; text-align:center; padding:24px 0;">Nenhuma folha cadastrada ainda.</p>';
         return;
       }
       const groups = {};
@@ -643,85 +482,78 @@ Abaixo está o arquivo **`index.html` 100% completo, do início ao fim, sem nenh
         groups[k].push(l);
       });
 
-      Object.keys(groups).sort().forEach(name => {
-        const items = groups[name];
-        const photo = leafPhotos[name] || '';
-        const g = document.createElement('div');
-        g.className = 'leaf-group';
-        g.innerHTML = `
-          <div class="leaf-header">
-            <div class="leaf-photo-box" onclick="triggerPhotoForLeaf('${name}')" title="Trocar foto">
+      Object.keys(groups).sort().forEach(k => {
+        const items = groups[k], photo = leafPhotos[k] || '';
+        const card = document.createElement('div');
+        card.className = 'catalog-card';
+        card.innerHTML = `
+          <div class="card-head">
+            <div class="photo-thumb" onclick="promptPhoto('${k}')" title="Toque para foto">
               ${photo ? `<img src="${photo}" alt="">` : `📷`}
             </div>
-            <div class="leaf-header-info" onclick="this.closest('.leaf-group').classList.toggle('open')">
-              <div class="leaf-header-title">
-                <span>🌿 ${name}</span>
-                <span class="leaf-count">${items.length} rua(s) ▾</span>
+            <div class="head-info" onclick="this.closest('.catalog-card').classList.toggle('open')">
+              <div class="flex-b">
+                <strong style="font-size:0.95rem;">🌿 ${k}</strong>
+                <span class="badge-total pill-tag">${items.length} rua(s) ▾</span>
               </div>
             </div>
           </div>
-          <div class="leaf-items">
+          <div class="accordion-list">
             ${items.map(it => `
-              <div class="addr-item" onclick="goToLeaf('${it.id}')">
+              <div class="addr-row flex-b" onclick="navigateLeaf('${it.id}')">
                 <div>
-                  <div class="addr-name">📍 ${it.street || 'Rua sem nome'}</div>
-                  <div class="addr-tag">${it.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário'}</div>
+                  <div style="font-size:0.82rem; font-weight:700;">📍 ${it.street || 'Rua sem nome'}</div>
+                  <div style="font-size:0.68rem;" class="text-muted">${it.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário'}</div>
                 </div>
-                <span style="color:var(--green);font-weight:700;font-size:1rem;">➔</span>
+                <span style="color:var(--green); font-size:1rem; font-weight:700;">➔</span>
               </div>
             `).join('')}
           </div>
         `;
-        c.appendChild(g);
+        list.appendChild(card);
       });
     }
 
-    function goToLeaf(id) {
-      const item = locations.find(l => l.id === id);
-      if (!item) return;
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    function navigateLeaf(id) {
+      const it = locations.find(l => l.id === id);
+      if (!it) return;
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
       document.querySelector('[data-target="map"]').classList.add('active');
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      map.setView([item.lat, item.lng], 16);
-      setTimeout(() => { map.invalidateSize(); openDetails(item); }, 250);
+      map.setView([it.lat, it.lng], 16);
+      setTimeout(() => { map.invalidateSize(); openDetails(it); }, 250);
     }
 
-    function editCurrent() {
-      const item = currentDetail; closeModals(); openForm(item);
+    function editDetail() { const it = curDetail; closeModals(); openForm(it); }
+
+    function deleteDetail() {
+      if (!curDetail || !confirm('Deseja excluir este registro?')) return;
+      locations = locations.filter(x => x.id !== curDetail.id);
+      localStorage.setItem(K_LOC, JSON.stringify(locations));
+      closeModals(); renderMap(); renderTotals(); renderCatalog(); toast('Excluído!');
     }
 
-    function deleteCurrent() {
-      if (!currentDetail || !confirm('Deseja excluir este registro?')) return;
-      locations = locations.filter(x => x.id !== currentDetail.id);
-      localStorage.setItem(KEY, JSON.stringify(locations));
-      closeModals(); renderMap(); renderStats(); renderLeavesView(); toast('Excluído!');
-    }
-
-    function deleteCurrentForm() {
+    function deleteForm() {
       const id = document.getElementById('f-id').value;
       if (!id || !confirm('Deseja excluir esta folha?')) return;
       locations = locations.filter(x => x.id !== id);
-      localStorage.setItem(KEY, JSON.stringify(locations));
-      closeModals(); renderMap(); renderStats(); renderLeavesView(); toast('Excluído!');
+      localStorage.setItem(K_LOC, JSON.stringify(locations));
+      closeModals(); renderMap(); renderTotals(); renderCatalog(); toast('Excluído!');
     }
 
     function openRoute() {
-      if (!currentDetail) return;
+      if (!curDetail) return;
       const o = userLoc ? `${userLoc.lat},${userLoc.lng}` : '';
-      window.open(`[https://www.google.com/maps/dir/?api=1&destination=$](https://www.google.com/maps/dir/?api=1&destination=$){currentDetail.lat},${currentDetail.lng}${o ? `&origin=${o}` : ''}`, '_blank');
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${curDetail.lat},${curDetail.lng}${o ? `&origin=${o}` : ''}`, '_blank');
     }
 
-    function renderStats() {
-      document.getElementById('stat-count').textContent = `${locations.length} locais`;
+    function renderTotals() {
+      document.getElementById('total-badge').textContent = `${locations.length} locais`;
     }
 
-    function calcDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371;
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon/2) * Math.sin(dLon/2);
+    function dist(lat1, lon1, lat2, lon2) {
+      const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
   </script>
