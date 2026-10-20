@@ -9,56 +9,68 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0c0e12;
-      --card: #161922;
-      --card-sub: #1f2430;
-      --txt: #f3f4f6;
+      --bg: #090a0f;
+      --card: #141721;
+      --card-sub: #1e2230;
+      --border: rgba(255,255,255,0.08);
+      --text: #f8fafc;
       --muted: #94a3b8;
-      --border: rgba(255, 255, 255, 0.08);
-      --green: #10b981;
       --blue: #2563eb;
       --orange: #ea580c;
+      --green: #10b981;
       --danger: #ef4444;
       --radius: 16px;
       --pill: 9999px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--txt); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
     /* TOPO */
-    header { background: rgba(12, 14, 18, 0.95); backdrop-filter: blur(8px); padding: 12px 14px 8px; z-index: 1000; border-bottom: 1px solid var(--border); }
+    header { background: rgba(9,10,15,0.92); backdrop-filter: blur(10px); padding: 12px 14px 8px; z-index: 1000; border-bottom: 1px solid var(--border); }
     .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .brand { font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 6px; }
-    .badge-count { background: var(--card-sub); border: 1px solid var(--border); padding: 2px 8px; border-radius: var(--pill); font-size: 0.7rem; font-weight: 700; color: var(--green); }
-    .search-wrap { margin-bottom: 8px; }
-    .search-wrap input { width: 100%; padding: 8px 12px; border-radius: var(--pill); border: 1px solid var(--border); background: var(--card); color: #fff; font-size: 0.84rem; outline: none; font-family: inherit; }
-    .search-wrap input::placeholder { color: #64748b; }
+    .badge-count { background: var(--card-sub); border: 1px solid var(--border); padding: 2px 10px; border-radius: var(--pill); font-size: 0.72rem; font-weight: 700; color: var(--green); }
+    .search-box { margin-bottom: 8px; }
+    .search-box input { width: 100%; padding: 8px 14px; border-radius: var(--pill); border: 1px solid var(--border); background: var(--card); color: #fff; font-size: 0.84rem; outline: none; font-family: inherit; }
+    .search-box input::placeholder { color: #64748b; }
     .pills { display: flex; gap: 6px; overflow-x: auto; }
-    .pill { padding: 4px 12px; font-size: 0.72rem; border-radius: var(--pill); background: var(--card); border: 1px solid var(--border); color: var(--muted); cursor: pointer; white-space: nowrap; font-weight: 600; }
+    .pill { padding: 5px 12px; font-size: 0.72rem; border-radius: var(--pill); background: var(--card); border: 1px solid var(--border); color: var(--muted); cursor: pointer; white-space: nowrap; font-weight: 600; }
     .pill.active { background: #fff; color: #000; border-color: #fff; font-weight: 800; }
 
-    /* ÁREA PRINCIPAL E MAPA */
+    /* MAPA */
     main { flex: 1; position: relative; overflow: hidden; }
-    #map { width: 100%; height: 100%; background: #111; }
-    .gps-btn { position: absolute; right: 14px; bottom: 20px; z-index: 500; width: 44px; height: 44px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); color: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.5); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    #map { width: 100%; height: 100%; background: #090a0f; }
+    .gps-btn { position: absolute; right: 14px; bottom: 20px; z-index: 500; width: 46px; height: 46px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.5); font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    /* BARRA INFERIOR */
+    /* MENU INFERIOR */
     nav { background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 6px 0 10px; z-index: 1000; }
-    .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--muted); font-size: 0.7rem; font-weight: 700; cursor: pointer; width: 25%; font-family: inherit; }
+    .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--muted); font-size: 0.7rem; font-weight: 700; cursor: pointer; width: 25%; font-family: inherit; }
     .nav-btn.active { color: #fff; }
-    .nav-btn.add .icon-box { background: linear-gradient(135deg, var(--green), #059669); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-top: -16px; border: 3px solid var(--card); box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+    .nav-btn.add .icon-box { background: linear-gradient(135deg, var(--green), #059669); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-top: -16px; border: 3px solid var(--card); box-shadow: 0 4px 12px rgba(16,185,129,0.35); }
 
     /* TELAS SOBREPOSTAS */
     .view { position: absolute; inset: 0; background: var(--bg); z-index: 600; display: none; flex-direction: column; overflow-y: auto; padding: 16px; }
     .view.active { display: flex; }
-    .leaf-card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 12px 14px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
 
-    /* MODAL SHEETS */
+    /* CATÁLOGO EM SANFONA COM ENDEREÇOS */
+    .leaf-group { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; overflow: hidden; }
+    .leaf-header { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+    .leaf-header strong { font-size: 0.92rem; }
+    .leaf-count { font-size: 0.72rem; background: var(--card-sub); padding: 3px 10px; border-radius: var(--pill); color: var(--green); font-weight: 700; }
+    .leaf-items { display: none; border-top: 1px solid var(--border); background: rgba(0,0,0,0.25); }
+    .leaf-group.open .leaf-items { display: block; }
+    .addr-item { padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .addr-item:last-child { border-bottom: none; }
+    .addr-item:active { background: var(--card-sub); }
+    .addr-name { font-size: 0.8rem; font-weight: 600; color: #fff; }
+    .addr-tag { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+
+    /* MODAL */
     .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: flex-end; justify-content: center; }
     .modal.active { display: flex; }
-    .sheet { background: var(--card); border: 1px solid var(--border); width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 16px 18px 26px; max-height: 88vh; overflow-y: auto; }
+    .sheet { background: var(--card); border: 1px solid var(--border); width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 16px 18px 24px; max-height: 88vh; overflow-y: auto; }
     .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-    .close-btn { background: var(--card-sub); border: 1px solid var(--border); color: var(--muted); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 0.85rem; }
+    .close-btn { background: var(--card-sub); border: 1px solid var(--border); color: var(--muted); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; }
 
     /* FORMULÁRIO */
     .form-group { margin-bottom: 11px; }
@@ -67,35 +79,28 @@
     input[type="text"]:focus, textarea:focus { border-color: var(--green); }
     textarea { resize: vertical; min-height: 48px; }
 
-    /* CARDS DE HORÁRIO INSPIRADOS NO LAYOUT */
+    /* CARDS DE HORÁRIO ESTILO INTELLICAAI */
     .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .type-card { border-radius: var(--radius); padding: 10px; text-align: left; cursor: pointer; border: 1px solid var(--border); background: var(--card-sub); position: relative; transition: 0.2s; }
-    .type-card.type-day.selected { background: linear-gradient(135deg, rgba(37,99,235,0.25), rgba(37,99,235,0.08)); border-color: var(--blue); }
-    .type-card.type-night.selected { background: linear-gradient(135deg, rgba(234,88,12,0.25), rgba(234,88,12,0.08)); border-color: var(--orange); }
-    .type-icon { font-size: 1.1rem; margin-bottom: 4px; }
-    .type-title { font-size: 0.78rem; font-weight: 700; color: #fff; }
-    .type-sub { font-size: 0.66rem; color: var(--muted); }
+    .type-card { border-radius: var(--radius); padding: 10px; cursor: pointer; border: 1px solid var(--border); background: var(--card-sub); transition: 0.2s; }
+    .type-card.day.selected { background: linear-gradient(135deg, rgba(37,99,235,0.25), rgba(37,99,235,0.08)); border-color: var(--blue); }
+    .type-card.night.selected { background: linear-gradient(135deg, rgba(234,88,12,0.25), rgba(234,88,12,0.08)); border-color: var(--orange); }
 
-    /* FOTO */
-    .photo-area { position: relative; height: 110px; border: 1.5px dashed var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: var(--card-sub); }
+    .photo-area { position: relative; height: 100px; border: 1.5px dashed var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: var(--card-sub); }
     .photo-area img { width: 100%; height: 100%; object-fit: cover; }
     .badge { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.85); border-radius: var(--pill); padding: 2px 7px; font-size: 0.7rem; font-weight: 700; border: 1px solid var(--border); }
 
-    /* SELETOR DE LOCALIZAÇÃO (APENAS GPS OU ENDEREÇO) */
+    /* LOCALIZAÇÃO (GPS OU ENDEREÇO) */
     .loc-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--card-sub); padding: 3px; border-radius: var(--pill); margin-bottom: 8px; }
     .loc-tab-btn { border: none; background: transparent; padding: 8px; border-radius: var(--pill); font-family: inherit; font-size: 0.74rem; font-weight: 700; color: var(--muted); cursor: pointer; }
     .loc-tab-btn.active { background: #fff; color: #000; }
     .loc-status { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
-    .addr-row { display: flex; gap: 6px; }
 
-    /* BOTÕES */
     .btn { width: 100%; padding: 11px; border-radius: var(--pill); border: none; font-weight: 700; font-size: 0.88rem; cursor: pointer; margin-top: 4px; font-family: inherit; }
     .btn-main { background: var(--green); color: #000; }
     .btn-sub { background: var(--card-sub); color: #fff; border: 1px solid var(--border); }
     .btn-del { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.25); }
 
-    /* PINS DO MAPA E TOAST */
-    .leaf-pin { background: var(--card); border: 2px solid #fff; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(0,0,0,0.6); position: relative; }
+    .leaf-pin { background: var(--card); border: 2px solid #fff; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.6); }
     .leaf-pin .badge-icon { position: absolute; top: -4px; right: -4px; background: #000; border-radius: 50%; width: 15px; height: 15px; display: flex; align-items: center; justify-content: center; font-size: 8px; border: 1px solid #fff; }
     #toast { position: fixed; top: 14px; left: 50%; transform: translateX(-50%) translateY(-60px); background: #fff; color: #000; padding: 6px 16px; border-radius: var(--pill); font-size: 0.76rem; font-weight: 700; z-index: 3000; transition: 0.25s; pointer-events: none; }
     #toast.show { transform: translateX(-50%) translateY(0); }
@@ -110,7 +115,7 @@
       <div class="brand">🌿 <span>Mapa das Folhas</span></div>
       <div id="stat-count" class="badge-count">0 locais</div>
     </div>
-    <div class="search-wrap">
+    <div class="search-box">
       <input type="text" id="search-input" placeholder="Buscar folha...">
     </div>
     <div class="pills">
@@ -125,13 +130,14 @@
     <button class="gps-btn" id="btn-gps" title="Minha Localização">📍</button>
 
     <div class="view" id="view-leaves">
-      <h3 style="margin-bottom: 12px; font-size: 1.1rem; font-weight: 800;">Catálogo de Folhas</h3>
+      <h3 style="margin-bottom: 4px; font-size: 1.1rem; font-weight: 800;">Catálogo de Folhas</h3>
+      <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 12px;">Toque na planta para ver os locais cadastrados.</p>
       <div id="leaves-list"></div>
     </div>
 
     <div class="view" id="view-settings">
       <h3 style="margin-bottom: 8px; font-size: 1.1rem; font-weight: 800;">Configurações</h3>
-      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 14px;">Os dados ficam salvos localmente no navegador deste dispositivo.</p>
+      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 14px;">Os dados ficam salvos localmente neste navegador.</p>
       <button class="btn btn-sub" id="btn-export">📥 Fazer Backup (JSON)</button>
       <button class="btn btn-del" id="btn-clear" style="margin-top: 10px;">🗑️ Limpar Todos os Dados</button>
     </div>
@@ -144,12 +150,12 @@
     <button class="nav-btn" data-target="settings"><span>⚙️</span><span>Ajustes</span></button>
   </nav>
 
-  <!-- MODAL ADICIONAR / EDITAR -->
+  <!-- MODAL FORMULÁRIO -->
   <div class="modal" id="modal-form">
     <div class="sheet">
       <div class="sheet-head">
         <h4 id="form-title" style="font-size: 1rem; font-weight: 800;">＋ Nova Folha</h4>
-        <button class="close-btn" id="form-close">✕</button>
+        <button class="close-btn" onclick="closeModals()">✕</button>
       </div>
 
       <input type="hidden" id="f-id">
@@ -163,10 +169,10 @@
 
       <div class="form-group">
         <label>Foto</label>
-        <input type="file" id="f-file" accept="image/*" capture="environment" style="display:none;">
-        <div class="photo-area" id="photo-area">
+        <input type="file" id="f-file" accept="image/*" capture="environment" style="display:none;" onchange="handlePhoto(event)">
+        <div class="photo-area" onclick="document.getElementById('f-file').click()">
           <span id="photo-txt" style="font-size: 0.76rem; color: var(--muted);">📷 Toque para adicionar foto</span>
-          <img id="photo-img" style="display:none;" alt="Foto">
+          <img id="photo-img" style="display:none;" alt="">
           <span class="badge" id="photo-badge" style="display:none;">🕐</span>
         </div>
       </div>
@@ -174,36 +180,35 @@
       <div class="form-group">
         <label>Horário de Retirada</label>
         <div class="type-grid">
-          <div class="type-card type-day selected" id="card-day">
-            <div class="type-icon">🕐</div>
-            <div class="type-title">Qualquer Horário</div>
-            <div class="type-sub">Acesso tranquilo</div>
+          <div class="type-card day selected" id="card-day" onclick="selectType('qualquer_horario')">
+            <div style="font-size: 1.1rem; margin-bottom: 2px;">🕐</div>
+            <div style="font-size: 0.78rem; font-weight: 700;">Qualquer Horário</div>
+            <div style="font-size: 0.66rem; color: var(--muted);">Tranquilo</div>
           </div>
-          <div class="type-card type-night" id="card-night">
-            <div class="type-icon">🌙</div>
-            <div class="type-title">Após 00h</div>
-            <div class="type-sub">Rua movimentada</div>
+          <div class="type-card night" id="card-night" onclick="selectType('movimentado')">
+            <div style="font-size: 1.1rem; margin-bottom: 2px;">🌙</div>
+            <div style="font-size: 0.78rem; font-weight: 700;">Após 00h</div>
+            <div style="font-size: 0.66rem; color: var(--muted);">Movimentado</div>
           </div>
         </div>
       </div>
 
-      <!-- LOCALIZAÇÃO: GPS OU ENDEREÇO -->
       <div class="form-group">
         <label>Localização *</label>
         <div class="loc-tabs">
-          <button type="button" class="loc-tab-btn active" id="tab-use-gps">📍 Minha Localização</button>
-          <button type="button" class="loc-tab-btn" id="tab-use-addr">✍️ Digitar Endereço</button>
+          <button type="button" class="loc-tab-btn active" id="tab-gps" onclick="switchLoc('gps')">📍 Minha Localização</button>
+          <button type="button" class="loc-tab-btn" id="tab-addr" onclick="switchLoc('addr')">✍️ Digitar Endereço</button>
         </div>
 
-        <div id="box-gps">
-          <button type="button" class="btn btn-sub" id="btn-refresh-gps" style="font-size: 0.8rem; padding: 8px;">🔄 Atualizar Posição Atual</button>
+        <div id="panel-gps">
+          <button type="button" class="btn btn-sub" onclick="getGPS(false)" style="font-size: 0.8rem; padding: 8px;">🔄 Atualizar Posição Atual</button>
           <div id="coord-txt" class="loc-status">Obtendo coordenadas do GPS...</div>
         </div>
 
-        <div id="box-addr" style="display:none;">
-          <div class="addr-row">
+        <div id="panel-addr" style="display:none;">
+          <div style="display:flex; gap:6px;">
             <input type="text" id="f-address" placeholder="Ex: Rua das Flores, 100, São Paulo">
-            <button type="button" class="btn btn-sub" id="btn-search-addr" style="width: auto; padding: 0 14px; margin-top: 0;">Buscar</button>
+            <button type="button" class="btn btn-sub" onclick="searchAddress()" style="width:auto; padding:0 14px; margin-top:0;">Buscar</button>
           </div>
           <div id="addr-txt" class="loc-status">Digite rua, número e cidade, depois clique em Buscar.</div>
         </div>
@@ -211,10 +216,10 @@
 
       <div class="form-group">
         <label>Observações</label>
-        <textarea id="f-obs" placeholder="Ex: Próximo à calçada, muro baixo..."></textarea>
+        <textarea id="f-obs" placeholder="Ex: Próximo à árvore, muro baixo..."></textarea>
       </div>
 
-      <button class="btn btn-main" id="btn-save">Salvar Planta</button>
+      <button class="btn btn-main" onclick="saveLocation()">Salvar Planta</button>
       <button class="btn btn-del" id="btn-del-form" style="display:none;" onclick="deleteCurrentForm()">🗑️ Excluir Folha</button>
     </div>
   </div>
@@ -223,26 +228,23 @@
   <div class="modal" id="modal-details">
     <div class="sheet">
       <div class="sheet-head">
-        <h4 id="det-name" style="font-size: 1.05rem; font-weight: 800;">Nome da Planta</h4>
-        <button class="close-btn" id="det-close">✕</button>
+        <h4 id="det-name" style="font-size: 1.05rem; font-weight: 800;">Nome</h4>
+        <button class="close-btn" onclick="closeModals()">✕</button>
       </div>
-
-      <div style="position: relative; height: 140px; border-radius: var(--radius); overflow: hidden; background: var(--card-sub); margin-bottom: 10px;">
-        <img id="det-img" style="width: 100%; height: 100%; object-fit: cover;" alt="Foto">
+      <div style="position:relative; height:140px; border-radius:var(--radius); overflow:hidden; background:var(--card-sub); margin-bottom:10px;">
+        <img id="det-img" style="width:100%; height:100%; object-fit:cover;" alt="">
         <span class="badge" id="det-badge">🌙</span>
       </div>
-
-      <div id="det-dist" style="font-size: 0.8rem; font-weight: 700; color: var(--green); margin-bottom: 6px;">Calculando...</div>
-      
-      <div style="background: var(--card-sub); border-radius: 12px; padding: 10px; font-size: 0.82rem; margin-bottom: 10px; border: 1px solid var(--border);">
-        <strong style="color: var(--muted); font-size: 0.72rem; text-transform: uppercase;">Observações:</strong>
-        <div id="det-obs" style="margin-top: 4px; color: #fff;">Sem observações.</div>
+      <div id="det-addr" style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 4px;"></div>
+      <div id="det-dist" style="font-size: 0.76rem; font-weight: 600; color: var(--green); margin-bottom: 8px;"></div>
+      <div style="background:var(--card-sub); border-radius:12px; padding:10px; font-size:0.82rem; margin-bottom:10px; border:1px solid var(--border);">
+        <strong style="color:var(--muted); font-size:0.72rem; text-transform:uppercase;">Observações:</strong>
+        <div id="det-obs" style="margin-top:4px; color:#fff;"></div>
       </div>
-
-      <button class="btn btn-main" id="det-route">🧭 Rota no Google Maps</button>
-      <div style="display: flex; gap: 6px; margin-top: 4px;">
-        <button class="btn btn-sub" id="det-edit" style="flex:1;">✏️ Editar</button>
-        <button class="btn btn-del" id="det-del" style="flex:1;">🗑️ Excluir</button>
+      <button class="btn btn-main" onclick="openRoute()">🧭 Rota no Google Maps</button>
+      <div style="display:flex; gap:6px; margin-top:4px;">
+        <button class="btn btn-sub" onclick="editCurrent()" style="flex:1;">✏️ Editar</button>
+        <button class="btn btn-del" onclick="deleteCurrent()" style="flex:1;">🗑️ Excluir</button>
       </div>
     </div>
   </div>
@@ -252,227 +254,57 @@
     const KEY = 'mapa_folhas_v1';
     let locations = JSON.parse(localStorage.getItem(KEY)) || [];
     let map, markersLayer, userLoc = null;
-    let selectedType = 'qualquer_horario';
-    let currentPhoto = '', currentDetail = null, activeFilter = 'all';
+    let selectedType = 'qualquer_horario', currentPhoto = '', currentDetail = null, activeFilter = 'all', currentAddressText = '';
 
-    window.addEventListener('load', () => {
+    window.onload = () => {
       map = L.map('map', { zoomControl: false }).setView([-23.5505, -46.6333], 13);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
       markersLayer = L.layerGroup().addTo(map);
 
-      bindUI();
-      getGPS(false);
-      renderMap();
-      renderStats();
-    });
-
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2200);
-    }
-
-    function bindUI() {
       document.getElementById('btn-gps').onclick = () => getGPS(true);
-
-      document.querySelectorAll('.pill').forEach(pill => {
-        pill.onclick = () => {
-          document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-          pill.classList.add('active');
-          activeFilter = pill.dataset.filter;
-          renderMap();
-        };
-      });
-
       document.getElementById('search-input').oninput = () => renderMap();
 
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.onclick = () => {
-          if (btn.id === 'nav-add') {
-            openForm();
-            return;
-          }
-          document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-          const target = btn.dataset.target;
-          if (target === 'leaves') {
-            renderLeavesView();
-            document.getElementById('view-leaves').classList.add('active');
-          } else if (target === 'settings') {
-            document.getElementById('view-settings').classList.add('active');
-          }
+      document.querySelectorAll('.pill').forEach(p => {
+        p.onclick = () => {
+          document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+          p.classList.add('active');
+          activeFilter = p.dataset.filter;
+          renderMap();
         };
       });
 
-      document.getElementById('form-close').onclick = closeModals;
-      document.getElementById('det-close').onclick = closeModals;
-
-      document.getElementById('card-night').onclick = () => selectType('movimentado');
-      document.getElementById('card-day').onclick = () => selectType('qualquer_horario');
-
-      const fileInput = document.getElementById('f-file');
-      document.getElementById('photo-area').onclick = () => fileInput.click();
-      fileInput.onchange = handlePhotoUpload;
-
-      // Localização: GPS vs Endereço
-      document.getElementById('tab-use-gps').onclick = () => switchLocTab('gps');
-      document.getElementById('tab-use-addr').onclick = () => switchLocTab('addr');
-      document.getElementById('btn-refresh-gps').onclick = () => getGPS(false);
-      document.getElementById('btn-search-addr').onclick = geocodeAddress;
-
-      document.getElementById('btn-save').onclick = saveLocation;
-
-      document.getElementById('det-route').onclick = () => {
-        if (!currentDetail) return;
-        const o = userLoc ? `${userLoc.lat},${userLoc.lng}` : '';
-        window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentDetail.lat},${currentDetail.lng}${o ? `&origin=${o}` : ''}`, '_blank');
-      };
-
-      document.getElementById('det-edit').onclick = () => {
-        const item = currentDetail;
-        closeModals();
-        openForm(item);
-      };
-
-      document.getElementById('det-del').onclick = () => {
-        if (confirm('Deseja excluir este registro?')) {
-          locations = locations.filter(l => l.id !== currentDetail.id);
-          localStorage.setItem(KEY, JSON.stringify(locations));
-          closeModals();
-          renderMap();
-          renderStats();
-          showToast('Registro excluído!');
-        }
-      };
+      document.querySelectorAll('.nav-btn').forEach(b => {
+        b.onclick = () => {
+          if (b.id === 'nav-add') { openForm(); return; }
+          document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+          const t = b.dataset.target;
+          if (t === 'leaves') { renderLeavesView(); document.getElementById('view-leaves').classList.add('active'); }
+          else if (t === 'settings') { document.getElementById('view-settings').classList.add('active'); }
+          else { setTimeout(() => map.invalidateSize(), 200); }
+        };
+      });
 
       document.getElementById('btn-export').onclick = () => {
-        const blob = new Blob([JSON.stringify(locations, null, 2)], { type: 'application/json' });
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `backup-folhas-${Date.now()}.json`;
-        a.click();
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(locations, null, 2)], { type: 'application/json' }));
+        a.download = 'backup-folhas.json'; a.click();
       };
 
       document.getElementById('btn-clear').onclick = () => {
-        if (confirm('Tem certeza que deseja apagar tudo?')) {
-          locations = [];
-          localStorage.removeItem(KEY);
-          closeModals();
-          renderMap();
-          renderStats();
-          showToast('Dados apagados!');
+        if (confirm('Deseja apagar todos os dados?')) {
+          locations = []; localStorage.removeItem(KEY); closeModals(); renderMap(); renderStats(); renderLeavesView(); toast('Dados apagados!');
         }
       };
-    }
 
-    function switchLocTab(type) {
-      const isGps = type === 'gps';
-      document.getElementById('tab-use-gps').classList.toggle('active', isGps);
-      document.getElementById('tab-use-addr').classList.toggle('active', !isGps);
-      document.getElementById('box-gps').style.display = isGps ? 'block' : 'none';
-      document.getElementById('box-addr').style.display = !isGps ? 'block' : 'none';
-      if (isGps && !document.getElementById('f-lat').value) getGPS(false);
-    }
+      getGPS(false); renderMap(); renderStats();
+    };
 
-    function geocodeAddress() {
-      const query = document.getElementById('f-address').value.trim();
-      const status = document.getElementById('addr-txt');
-      if (!query) return alert('Digite um endereço para buscar.');
-      status.textContent = 'Buscando endereço...';
-      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
-        .then(r => r.json())
-        .then(data => {
-          if (data && data.length > 0) {
-            const lat = parseFloat(data[0].lat);
-            const lng = parseFloat(data[0].lon);
-            setFormCoords(lat, lng, `📍 Endereço: ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
-            status.textContent = `Encontrado: ${data[0].display_name.split(',').slice(0, 3).join(',')}`;
-            map.setView([lat, lng], 16);
-            showToast('Endereço encontrado!');
-          } else {
-            status.textContent = '❌ Endereço não encontrado. Tente detalhar mais.';
-          }
-        })
-        .catch(() => {
-          status.textContent = '⚠️ Erro ao consultar endereço.';
-        });
-    }
-
-    function getGPS(center) {
-      if (!navigator.geolocation) return showToast('GPS não suportado');
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-          setFormCoords(userLoc.lat, userLoc.lng, `📍 GPS: ${userLoc.lat.toFixed(4)}, ${userLoc.lng.toFixed(4)}`);
-          if (center) {
-            map.setView([userLoc.lat, userLoc.lng], 16);
-            showToast('Posição atualizada!');
-          }
-        },
-        () => {
-          document.getElementById('coord-txt').textContent = '⚠️ GPS indisponível (use a busca por endereço)';
-        },
-        { enableHighAccuracy: true, timeout: 8000 }
-      );
-    }
-
-    function setFormCoords(lat, lng, txt) {
-      document.getElementById('f-lat').value = lat;
-      document.getElementById('f-lng').value = lng;
-      document.getElementById('coord-txt').textContent = txt;
-    }
-
-    function openForm(item = null) {
-      closeModals();
-      const title = document.getElementById('form-title');
-      switchLocTab('gps');
-      document.getElementById('f-address').value = '';
-      document.getElementById('addr-txt').textContent = 'Digite o endereço e clique em Buscar.';
-      
-      const btnDel = document.getElementById('btn-del-form');
-
-      if (item) {
-        title.textContent = '✏️ Editar Folha';
-        btnDel.style.display = 'block';
-        document.getElementById('f-id').value = item.id;
-        document.getElementById('f-name').value = item.name;
-        document.getElementById('f-obs').value = item.obs || '';
-        setFormCoords(item.lat, item.lng, `📍 ${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}`);
-        selectType(item.type);
-        setPhotoPreview(item.photo || '');
-      } else {
-        title.textContent = '＋ Nova Folha';
-        btnDel.style.display = 'none';
-        document.getElementById('f-id').value = '';
-        document.getElementById('f-name').value = '';
-        document.getElementById('f-obs').value = '';
-        selectType('qualquer_horario');
-        setPhotoPreview('');
-        if (userLoc) {
-          setFormCoords(userLoc.lat, userLoc.lng, `📍 GPS: ${userLoc.lat.toFixed(4)}, ${userLoc.lng.toFixed(4)}`);
-        } else {
-          getGPS(false);
-        }
-      }
-      document.getElementById('modal-form').classList.add('active');
-    }
-
-    function deleteCurrentForm() {
-      const id = document.getElementById('f-id').value;
-      if (!id || !confirm('Deseja excluir esta folha?')) return;
-      locations = locations.filter(l => l.id !== id);
-      localStorage.setItem(KEY, JSON.stringify(locations));
-      closeModals();
-      renderMap();
-      renderStats();
-      if (document.getElementById('view-leaves').classList.contains('active')) renderLeavesView();
-      showToast('Folha excluída!');
-    }
-
-    function closeModals() {
-      document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+    function toast(m) {
+      const t = document.getElementById('toast');
+      t.textContent = m; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
     }
 
     function selectType(t) {
@@ -482,90 +314,146 @@
       document.getElementById('photo-badge').textContent = t === 'movimentado' ? '🌙' : '🕐';
     }
 
-    function handlePhotoUpload(e) {
-      const f = e.target.files[0];
-      if (!f) return;
+    function switchLoc(m) {
+      const g = m === 'gps';
+      document.getElementById('tab-gps').classList.toggle('active', g);
+      document.getElementById('tab-addr').classList.toggle('active', !g);
+      document.getElementById('panel-gps').style.display = g ? 'block' : 'none';
+      document.getElementById('panel-addr').style.display = !g ? 'block' : 'none';
+      if (g && !document.getElementById('f-lat').value) getGPS(false);
+    }
+
+    function searchAddress() {
+      const q = document.getElementById('f-address').value.trim();
+      const s = document.getElementById('addr-txt');
+      if (!q) return alert('Digite o endereço.');
+      s.textContent = 'Buscando...';
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`)
+        .then(r => r.json()).then(d => {
+          if (d && d.length) {
+            const lat = parseFloat(d[0].lat), lng = parseFloat(d[0].lon);
+            currentAddressText = d[0].display_name.split(',').slice(0, 3).join(', ');
+            setCoords(lat, lng, `📍 ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+            s.textContent = `Encontrado: ${currentAddressText}`;
+            map.setView([lat, lng], 16);
+            toast('Endereço localizado!');
+          } else { s.textContent = '❌ Endereço não encontrado.'; }
+        }).catch(() => { s.textContent = '⚠️ Erro ao consultar.'; });
+    }
+
+    function getGPS(center) {
+      if (!navigator.geolocation) return toast('GPS indisponível');
+      navigator.geolocation.getCurrentPosition(p => {
+        userLoc = { lat: p.coords.latitude, lng: p.coords.longitude };
+        setCoords(userLoc.lat, userLoc.lng, `📍 GPS: ${userLoc.lat.toFixed(4)}, ${userLoc.lng.toFixed(4)}`);
+        if (center) { map.setView([userLoc.lat, userLoc.lng], 16); toast('Posição centralizada!'); }
+      }, () => { document.getElementById('coord-txt').textContent = '⚠️ GPS indisponível'; }, { enableHighAccuracy: true, timeout: 8000 });
+    }
+
+    function setCoords(lat, lng, txt) {
+      document.getElementById('f-lat').value = lat;
+      document.getElementById('f-lng').value = lng;
+      document.getElementById('coord-txt').textContent = txt;
+    }
+
+    function handlePhoto(e) {
+      const f = e.target.files[0]; if (!f) return;
       const r = new FileReader();
       r.onload = ev => {
         const img = new Image();
         img.onload = () => {
-          const c = document.createElement('canvas');
-          let w = img.width, h = img.height, max = 500;
+          const cvs = document.createElement('canvas');
+          let w = img.width, h = img.height, max = 400;
           if (w > h && w > max) { h = Math.round((h * max) / w); w = max; }
           else if (h > max) { w = Math.round((w * max) / h); h = max; }
-          c.width = w; c.height = h;
-          c.getContext('2d').drawImage(img, 0, 0, w, h);
-          setPhotoPreview(c.toDataURL('image/jpeg', 0.65));
+          cvs.width = w; cvs.height = h;
+          cvs.getContext('2d').drawImage(img, 0, 0, w, h);
+          setPhoto(cvs.toDataURL('image/jpeg', 0.65));
         };
         img.src = ev.target.result;
       };
       r.readAsDataURL(f);
     }
 
-    function setPhotoPreview(src) {
-      currentPhoto = src;
-      const img = document.getElementById('photo-img');
-      const txt = document.getElementById('photo-txt');
-      const badge = document.getElementById('photo-badge');
-      if (src) {
-        img.src = src; img.style.display = 'block'; txt.style.display = 'none'; badge.style.display = 'block';
+    function setPhoto(s) {
+      currentPhoto = s;
+      const i = document.getElementById('photo-img'), t = document.getElementById('photo-txt'), b = document.getElementById('photo-badge');
+      if (s) { i.src = s; i.style.display = 'block'; t.style.display = 'none'; b.style.display = 'block'; }
+      else { i.style.display = 'none'; t.style.display = 'block'; b.style.display = 'none'; }
+    }
+
+    function openForm(item = null) {
+      closeModals();
+      switchLoc('gps');
+      document.getElementById('f-address').value = '';
+      document.getElementById('addr-txt').textContent = 'Digite o endereço e clique em Buscar.';
+      const bd = document.getElementById('btn-del-form');
+      if (item) {
+        document.getElementById('form-title').textContent = '✏️ Editar Folha';
+        bd.style.display = 'block';
+        document.getElementById('f-id').value = item.id;
+        document.getElementById('f-name').value = item.name;
+        document.getElementById('f-obs').value = item.obs || '';
+        currentAddressText = item.address || '';
+        setCoords(item.lat, item.lng, `📍 ${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}`);
+        selectType(item.type);
+        setPhoto(item.photo || '');
       } else {
-        img.style.display = 'none'; txt.style.display = 'block'; badge.style.display = 'none';
+        document.getElementById('form-title').textContent = '＋ Nova Folha';
+        bd.style.display = 'none';
+        document.getElementById('f-id').value = '';
+        document.getElementById('f-name').value = '';
+        document.getElementById('f-obs').value = '';
+        currentAddressText = '';
+        selectType('qualquer_horario');
+        setPhoto('');
+        if (userLoc) setCoords(userLoc.lat, userLoc.lng, `📍 GPS: ${userLoc.lat.toFixed(4)}, ${userLoc.lng.toFixed(4)}`);
+        else getGPS(false);
       }
+      document.getElementById('modal-form').classList.add('active');
+    }
+
+    function closeModals() {
+      document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
     }
 
     function saveLocation() {
-      const name = document.getElementById('f-name').value.trim();
+      const n = document.getElementById('f-name').value.trim();
       let lat = parseFloat(document.getElementById('f-lat').value);
       let lng = parseFloat(document.getElementById('f-lng').value);
       const obs = document.getElementById('f-obs').value.trim();
       const id = document.getElementById('f-id').value;
 
-      if (!name) return alert('Informe o nome da planta/folha.');
-      if (isNaN(lat) || isNaN(lng)) {
-        const c = map.getCenter();
-        lat = c.lat; lng = c.lng;
-      }
+      if (!n) return alert('Informe o nome da planta.');
+      if (isNaN(lat) || isNaN(lng)) { const c = map.getCenter(); lat = c.lat; lng = c.lng; }
+
+      const addr = currentAddressText || `Coord: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
 
       if (id) {
-        const i = locations.findIndex(l => l.id === id);
-        if (i !== -1) locations[i] = { ...locations[i], name, lat, lng, obs, type: selectedType, photo: currentPhoto };
+        const idx = locations.findIndex(x => x.id === id);
+        if (idx !== -1) locations[idx] = { ...locations[idx], name: n, lat, lng, obs, address: addr, type: selectedType, photo: currentPhoto };
       } else {
-        locations.push({
-          id: 'folha_' + Date.now(),
-          name, lat, lng, obs,
-          type: selectedType,
-          photo: currentPhoto
-        });
+        locations.push({ id: 'f_' + Date.now(), name: n, lat, lng, obs, address: addr, type: selectedType, photo: currentPhoto });
       }
 
       localStorage.setItem(KEY, JSON.stringify(locations));
-      closeModals();
-      renderMap();
-      renderStats();
-      map.setView([lat, lng], 16);
-      showToast('Planta salva com sucesso!');
+      closeModals(); renderMap(); renderStats(); map.setView([lat, lng], 16); toast('Planta salva!');
     }
 
     function renderMap() {
       markersLayer.clearLayers();
-      const query = document.getElementById('search-input').value.trim().toLowerCase();
-
-      locations.forEach(loc => {
-        if (activeFilter !== 'all' && loc.type !== activeFilter) return;
-        if (query && !loc.name.toLowerCase().includes(query)) return;
-
-        const isNight = loc.type === 'movimentado';
+      const q = document.getElementById('search-input').value.trim().toLowerCase();
+      locations.forEach(l => {
+        if (activeFilter !== 'all' && l.type !== activeFilter) return;
+        if (q && !l.name.toLowerCase().includes(q)) return;
         const icon = L.divIcon({
           className: '',
-          html: `<div class="leaf-pin">🌿<span class="badge-icon">${isNight ? '🌙' : '🕐'}</span></div>`,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16]
+          html: `<div class="leaf-pin">🌿<span class="badge-icon">${l.type === 'movimentado' ? '🌙' : '🕐'}</span></div>`,
+          iconSize: [32, 32], iconAnchor: [16, 16]
         });
-
-        const marker = L.marker([loc.lat, loc.lng], { icon });
-        marker.on('click', () => openDetails(loc));
-        markersLayer.addLayer(marker);
+        const m = L.marker([l.lat, l.lng], { icon });
+        m.on('click', () => openDetails(l));
+        markersLayer.addLayer(m);
       });
     }
 
@@ -573,8 +461,8 @@
       currentDetail = item;
       document.getElementById('det-name').textContent = item.name;
       document.getElementById('det-badge').textContent = item.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário';
+      document.getElementById('det-addr').textContent = item.address || `Coord: ${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}`;
       document.getElementById('det-obs').textContent = item.obs || 'Nenhuma observação cadastrada.';
-      
       const img = document.getElementById('det-img');
       img.src = item.photo || '';
       img.style.display = item.photo ? 'block' : 'none';
@@ -585,40 +473,85 @@
       } else {
         document.getElementById('det-dist').textContent = `📍 Coordenadas: ${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}`;
       }
-
       document.getElementById('modal-details').classList.add('active');
+    }
+
+    function renderLeavesView() {
+      const c = document.getElementById('leaves-list');
+      c.innerHTML = '';
+      if (!locations.length) {
+        c.innerHTML = '<p style="font-size:0.8rem;color:var(--muted);text-align:center;padding:24px 0;">Nenhuma folha cadastrada ainda.</p>';
+        return;
+      }
+      const groups = {};
+      locations.forEach(l => {
+        const k = l.name.trim().toUpperCase();
+        if (!groups[k]) groups[k] = [];
+        groups[k].push(l);
+      });
+
+      Object.keys(groups).sort().forEach(name => {
+        const items = groups[name];
+        const g = document.createElement('div');
+        g.className = 'leaf-group';
+        g.innerHTML = `
+          <div class="leaf-header" onclick="this.parentElement.classList.toggle('open')">
+            <strong>🌿 ${name}</strong>
+            <span class="leaf-count">${items.length} local(is) ▾</span>
+          </div>
+          <div class="leaf-items">
+            ${items.map(it => `
+              <div class="addr-item" onclick="goToLeaf('${it.id}')">
+                <div>
+                  <div class="addr-name">${it.address || (it.lat.toFixed(4) + ', ' + it.lng.toFixed(4))}</div>
+                  <div class="addr-tag">${it.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário'}</div>
+                </div>
+                <span style="color:var(--green);font-size:0.9rem;">➔</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        c.appendChild(g);
+      });
+    }
+
+    function goToLeaf(id) {
+      const item = locations.find(l => l.id === id);
+      if (!item) return;
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('[data-target="map"]').classList.add('active');
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      map.setView([item.lat, item.lng], 16);
+      setTimeout(() => { map.invalidateSize(); openDetails(item); }, 250);
+    }
+
+    function editCurrent() {
+      const item = currentDetail; closeModals(); openForm(item);
+    }
+
+    function deleteCurrent() {
+      if (!currentDetail || !confirm('Deseja excluir esta folha?')) return;
+      locations = locations.filter(x => x.id !== currentDetail.id);
+      localStorage.setItem(KEY, JSON.stringify(locations));
+      closeModals(); renderMap(); renderStats(); renderLeavesView(); toast('Excluída!');
+    }
+
+    function deleteCurrentForm() {
+      const id = document.getElementById('f-id').value;
+      if (!id || !confirm('Deseja excluir esta folha?')) return;
+      locations = locations.filter(x => x.id !== id);
+      localStorage.setItem(KEY, JSON.stringify(locations));
+      closeModals(); renderMap(); renderStats(); renderLeavesView(); toast('Excluída!');
+    }
+
+    function openRoute() {
+      if (!currentDetail) return;
+      const o = userLoc ? `${userLoc.lat},${userLoc.lng}` : '';
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${currentDetail.lat},${currentDetail.lng}${o ? `&origin=${o}` : ''}`, '_blank');
     }
 
     function renderStats() {
       document.getElementById('stat-count').textContent = `${locations.length} locais`;
-    }
-
-    function renderLeavesView() {
-      const container = document.getElementById('leaves-list');
-      container.innerHTML = '';
-      if (!locations.length) {
-        container.innerHTML = '<p style="font-size:0.85rem;color:var(--muted);text-align:center;padding:24px 0;">Nenhuma folha cadastrada ainda.</p>';
-        return;
-      }
-      const grouped = {};
-      locations.forEach(l => {
-        const k = l.name.toUpperCase();
-        grouped[k] = (grouped[k] || 0) + 1;
-      });
-
-      Object.keys(grouped).sort().forEach(leaf => {
-        const card = document.createElement('div');
-        card.className = 'leaf-card';
-        card.innerHTML = `<strong>🌿 ${leaf}</strong><span style="font-size:0.75rem;background:var(--card-sub);padding:3px 10px;border-radius:var(--pill);color:var(--green);font-weight:700;">${grouped[leaf]} local(is)</span>`;
-        card.onclick = () => {
-          document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-          document.querySelector('[data-target="map"]').classList.add('active');
-          document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-          document.getElementById('search-input').value = leaf;
-          renderMap();
-        };
-        container.appendChild(card);
-      });
     }
 
     function calcDistance(lat1, lon1, lat2, lon2) {
