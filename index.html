@@ -4,90 +4,57 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Mapa das Folhas</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg:#090a0f; --card:#141721; --sub:#1e2230; --line:rgba(255,255,255,0.08);
-      --txt:#f8fafc; --muted:#94a3b8; --blue:#2563eb; --orange:#ea580c;
-      --green:#10b981; --red:#ef4444; --r:16px; --pill:9999px;
-    }
-    * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
-    body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--txt); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
-
-    .flex-b { display:flex; justify-content:space-between; align-items:center; }
-    .flex-c { display:flex; align-items:center; }
-    .gap-6 { gap:6px; } .gap-8 { gap:8px; }
-    .w-100 { width:100%; } .text-muted { color:var(--muted); }
-    .pill-tag { border-radius:var(--pill); font-size:0.72rem; font-weight:700; }
-
-    header { background:rgba(9,10,15,0.94); backdrop-filter:blur(10px); padding:10px 14px 8px; z-index:1000; border-bottom:1px solid var(--line); }
-    .brand { font-size:1.05rem; font-weight:800; }
-    .badge-total { background:var(--sub); border:1px solid var(--line); padding:2px 10px; color:var(--green); }
-    .user-btn { background:var(--sub); border:1px solid var(--line); border-radius:var(--pill); padding:3px 8px 3px 4px; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.72rem; font-weight:700; color:#fff; }
-    .user-avatar { width:22px; height:22px; border-radius:50%; object-fit:cover; }
-    .search-inp { padding:8px 14px; border-radius:var(--pill); border:1px solid var(--line); background:var(--card); color:#fff; font-size:0.84rem; outline:none; font-family:inherit; margin:8px 0; }
-    .filter-bar { display:flex; gap:6px; overflow-x:auto; }
-    .pill-btn { padding:5px 12px; background:var(--card); border:1px solid var(--line); color:var(--muted); cursor:pointer; white-space:nowrap; }
-    .pill-btn.active { background:#fff; color:#000; border-color:#fff; }
-
-    main { flex:1; position:relative; overflow:hidden; }
-    #map { width:100%; height:100%; background:#e5e3df; }
-    .gps-btn { position:absolute; right:14px; bottom:20px; z-index:500; width:44px; height:44px; border-radius:50%; background:var(--card); border:1px solid var(--line); color:#fff; box-shadow:0 6px 16px rgba(0,0,0,0.5); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-
-    nav { background:var(--card); border-top:1px solid var(--line); display:flex; justify-content:space-around; padding:6px 0 10px; z-index:1000; }
-    .nav-item { background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--muted); font-size:0.7rem; font-weight:700; cursor:pointer; width:25%; font-family:inherit; }
-    .nav-item.active { color:#fff; }
-    .nav-item.add-btn .add-icon { background:linear-gradient(135deg,var(--green),#059669); color:#fff; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin-top:-14px; border:3px solid var(--card); }
-
-    .view { position:absolute; inset:0; background:var(--bg); z-index:600; display:none; flex-direction:column; overflow-y:auto; padding:16px; }
-    .view.active { display:flex; }
-
-    .catalog-card { background:var(--card); border:1px solid var(--line); border-radius:var(--r); margin-bottom:10px; overflow:hidden; }
-    .card-head { padding:10px 14px; display:flex; align-items:center; gap:12px; }
-    .photo-thumb { width:48px; height:48px; border-radius:12px; border:1px solid var(--line); background:var(--sub); overflow:hidden; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; font-size:1.2rem; }
-    .photo-thumb img { width:100%; height:100%; object-fit:cover; }
-    .head-info { flex:1; cursor:pointer; user-select:none; }
-    .accordion-list { display:none; border-top:1px solid var(--line); background:rgba(0,0,0,0.25); }
-    .catalog-card.open .accordion-list { display:block; }
-    .addr-row { padding:10px 14px; border-bottom:1px solid var(--line); cursor:pointer; }
-    .addr-row:last-child { border-bottom:none; }
-    .addr-row:active { background:var(--sub); }
-
-    .modal { position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); z-index:2000; display:none; align-items:flex-end; justify-content:center; }
-    .modal.active { display:flex; }
-    .sheet { background:var(--card); border:1px solid var(--line); width:100%; max-width:480px; border-radius:24px 24px 0 0; padding:16px 18px 24px; max-height:88vh; overflow-y:auto; }
-    .sheet-title { font-size:1rem; font-weight:800; }
-    .btn-close { background:var(--sub); border:1px solid var(--line); color:var(--muted); width:28px; height:28px; border-radius:50%; cursor:pointer; }
-
-    .field { margin-bottom:11px; }
-    .field label { display:block; font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:4px; }
-    .input-box { width:100%; padding:9px 12px; border-radius:12px; border:1px solid var(--line); background:var(--sub); color:#fff; font-family:inherit; font-size:0.86rem; outline:none; }
-    .input-box:focus { border-color:var(--green); }
-    textarea.input-box { resize:vertical; min-height:48px; }
-
-    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .type-opt { border-radius:var(--r); padding:10px; cursor:pointer; border:1px solid var(--line); background:var(--sub); transition:0.2s; }
-    .type-opt.day.selected { background:linear-gradient(135deg,rgba(37,99,235,0.25),rgba(37,99,235,0.08)); border-color:var(--blue); }
-    .type-opt.night.selected { background:linear-gradient(135deg,rgba(234,88,12,0.25),rgba(234,88,12,0.08)); border-color:var(--orange); }
-
-    .tab-wrap { display:grid; grid-template-columns:1fr 1fr; gap:4px; background:var(--sub); padding:3px; border-radius:var(--pill); margin-bottom:8px; }
-    .tab-btn { border:none; background:transparent; padding:7px; border-radius:var(--pill); font-family:inherit; font-size:0.72rem; font-weight:700; color:var(--muted); cursor:pointer; }
-    .tab-btn.active { background:#fff; color:#000; }
-
-    .btn { width:100%; padding:11px; border-radius:var(--pill); border:none; font-weight:700; font-size:0.88rem; cursor:pointer; margin-top:4px; font-family:inherit; }
-    .btn-green { background:var(--green); color:#000; }
-    .btn-sub { background:var(--sub); color:#fff; border:1px solid var(--line); }
-    .btn-del { background:rgba(239,68,68,0.15); color:var(--red); border:1px solid rgba(239,68,68,0.25); }
-
-    .leaf-pin { background:var(--card); border:2px solid #fff; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:0.95rem; position:relative; box-shadow:0 4px 10px rgba(0,0,0,0.6); }
-    .pin-badge { position:absolute; top:-4px; right:-4px; background:#000; border-radius:50%; width:15px; height:15px; display:flex; align-items:center; justify-content:center; font-size:8px; border:1px solid #fff; }
-    #toast { position:fixed; top:14px; left:50%; transform:translateX(-50%) translateY(-60px); background:#fff; color:#000; padding:6px 16px; border-radius:var(--pill); font-size:0.76rem; font-weight:700; z-index:3000; transition:0.25s; pointer-events:none; }
-    #toast.show { transform:translateX(-50%) translateY(0); }
-
-    .photo-viewer-box { width:100%; height:260px; border-radius:16px; overflow:hidden; background:#000; border:1px solid var(--line); margin-bottom:12px; display:flex; align-items:center; justify-content:center; }
-    .photo-viewer-box img { width:100%; height:100%; object-fit:contain; }
+    :root{--bg:#090a0f;--card:#141721;--sub:#1e2230;--line:rgba(255,255,255,0.08);--txt:#f8fafc;--muted:#94a3b8;--blue:#2563eb;--orange:#ea580c;--green:#10b981;--red:#ef4444;--r:16px;--pill:9999px}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--txt);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+    .flex-b{display:flex;justify-content:space-between;align-items:center}
+    .flex-c{display:flex;align-items:center}
+    .gap-6{gap:6px}.gap-8{gap:8px}.w-100{width:100%}.text-muted{color:var(--muted)}
+    .pill-tag{border-radius:var(--pill);font-size:0.72rem;font-weight:700}
+    .btn{width:100%;padding:11px;border-radius:var(--pill);border:none;font-weight:700;font-size:0.88rem;cursor:pointer;font-family:inherit}
+    .btn-green{background:var(--green);color:#000}.btn-sub{background:var(--sub);color:#fff;border:1px solid var(--line)}
+    .btn-del{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.25)}
+    header{background:rgba(9,10,15,0.94);backdrop-filter:blur(10px);padding:10px 14px 8px;z-index:1000;border-bottom:1px solid var(--line)}
+    .brand{font-size:1.05rem;font-weight:800}.badge-total{background:var(--sub);border:1px solid var(--line);padding:2px 10px;color:var(--green)}
+    .user-btn{background:var(--sub);border:1px solid var(--line);border-radius:var(--pill);padding:3px 8px 3px 4px;cursor:pointer;font-size:0.72rem;font-weight:700;color:#fff}
+    .user-avatar{width:22px;height:22px;border-radius:50%;object-fit:cover}
+    .search-inp{padding:8px 14px;border-radius:var(--pill);border:1px solid var(--line);background:var(--card);color:#fff;font-size:0.84rem;outline:none;font-family:inherit;margin:8px 0}
+    .filter-bar{display:flex;gap:6px;overflow-x:auto}.pill-btn{padding:5px 12px;background:var(--card);border:1px solid var(--line);color:var(--muted);cursor:pointer;white-space:nowrap}
+    .pill-btn.active{background:#fff;color:#000;border-color:#fff}
+    main{flex:1;position:relative;overflow:hidden}#map{width:100%;height:100%;background:#e5e3df}
+    .gps-btn{position:absolute;right:14px;bottom:20px;z-index:500;width:44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--line);color:#fff;box-shadow:0 6px 16px rgba(0,0,0,0.5);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    nav{background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 0 10px;z-index:1000}
+    .nav-item{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:0.7rem;font-weight:700;cursor:pointer;width:25%;font-family:inherit}
+    .nav-item.active{color:#fff}.nav-item.add-btn .add-icon{background:linear-gradient(135deg,var(--green),#059669);color:#fff;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-top:-14px;border:3px solid var(--card)}
+    .view{position:absolute;inset:0;background:var(--bg);z-index:600;display:none;flex-direction:column;overflow-y:auto;padding:16px}.view.active{display:flex}
+    .catalog-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+    .card-head{padding:10px 14px;display:flex;align-items:center;gap:12px}
+    .photo-thumb{width:48px;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--sub);overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:1.2rem}
+    .photo-thumb img{width:100%;height:100%;object-fit:cover}.head-info{flex:1;cursor:pointer;user-select:none}
+    .accordion-list{display:none;border-top:1px solid var(--line);background:rgba(0,0,0,0.25)}.catalog-card.open .accordion-list{display:block}
+    .addr-row{padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer}.addr-row:last-child{border-bottom:none}.addr-row:active{background:var(--sub)}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);z-index:2000;display:none;align-items:flex-end;justify-content:center}.modal.active{display:flex}
+    .sheet{background:var(--card);border:1px solid var(--line);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:16px 18px 24px;max-height:88vh;overflow-y:auto}
+    .sheet-title{font-size:1rem;font-weight:800}.btn-close{background:var(--sub);border:1px solid var(--line);color:var(--muted);width:28px;height:28px;border-radius:50%;cursor:pointer}
+    .field{margin-bottom:11px}.field label{display:block;font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+    .input-box{width:100%;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--sub);color:#fff;font-family:inherit;font-size:0.86rem;outline:none}
+    .input-box:focus{border-color:var(--green)}textarea.input-box{resize:vertical;min-height:48px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .type-opt{border-radius:var(--r);padding:10px;cursor:pointer;border:1px solid var(--line);background:var(--sub);transition:0.2s}
+    .type-opt.day.selected{background:linear-gradient(135deg,rgba(37,99,235,0.25),rgba(37,99,235,0.08));border-color:var(--blue)}
+    .type-opt.night.selected{background:linear-gradient(135deg,rgba(234,88,12,0.25),rgba(234,88,12,0.08));border-color:var(--orange)}
+    .tab-wrap{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--sub);padding:3px;border-radius:var(--pill);margin-bottom:8px}
+    .tab-btn{border:none;background:transparent;padding:7px;border-radius:var(--pill);font-family:inherit;font-size:0.72rem;font-weight:700;color:var(--muted);cursor:pointer}
+    .tab-btn.active{background:#fff;color:#000}
+    .leaf-pin{background:var(--card);border:2px solid #fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:0.95rem;position:relative;box-shadow:0 4px 10px rgba(0,0,0,0.6)}
+    .pin-badge{position:absolute;top:-4px;right:-4px;background:#000;border-radius:50%;width:15px;height:15px;display:flex;align-items:center;justify-content:center;font-size:8px;border:1px solid #fff}
+    .photo-viewer-box{width:100%;height:260px;border-radius:16px;overflow:hidden;background:#000;border:1px solid var(--line);margin-bottom:12px;display:flex;align-items:center;justify-content:center}
+    .photo-viewer-box img{width:100%;height:100%;object-fit:contain}
+    #toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-60px);background:#fff;color:#000;padding:6px 16px;border-radius:var(--pill);font-size:0.76rem;font-weight:700;z-index:3000;transition:0.25s;pointer-events:none}
+    #toast.show{transform:translateX(-50%) translateY(0)}
   </style>
 </head>
 <body>
@@ -99,9 +66,7 @@
       <div class="brand flex-c gap-6">🌿 <span>Mapa das Folhas</span></div>
       <div class="flex-c gap-6">
         <div id="total-badge" class="badge-total pill-tag">0 locais</div>
-        <button id="btn-auth" class="user-btn" onclick="toggleAuth()">
-          <span>🔑 Entrar com Google</span>
-        </button>
+        <button id="btn-auth" class="user-btn flex-c gap-6" onclick="toggleAuth()"><span>🔑 Entrar com Google</span></button>
       </div>
     </div>
     <input type="text" id="search-input" class="search-inp w-100" placeholder="Buscar folha ou rua...">
@@ -117,18 +82,18 @@
     <button class="gps-btn" id="btn-gps" title="Minha Localização">📍</button>
 
     <div class="view" id="view-leaves">
-      <h3 style="margin-bottom:4px; font-size:1.1rem; font-weight:800;">Catálogo de Folhas</h3>
-      <p style="font-size:0.75rem; margin-bottom:12px;" class="text-muted">Toque na foto para visualizar. Toque no nome para ver as ruas.</p>
+      <h3 style="margin-bottom:4px;font-size:1.1rem;font-weight:800;">Catálogo de Folhas</h3>
+      <p style="font-size:0.75rem;margin-bottom:12px;" class="text-muted">Toque na foto para visualizar. Toque no nome para ver as ruas.</p>
       <div id="leaves-list"></div>
     </div>
 
     <div class="view" id="view-settings">
-      <h3 style="margin-bottom:8px; font-size:1.1rem; font-weight:800;">Configurações</h3>
-      <div style="background:var(--sub); border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:14px;">
-        <div id="user-info-text" style="font-size:0.84rem; font-weight:700;">Não conectado</div>
-        <div id="admin-badge-txt" style="font-size:0.72rem; color:var(--muted); margin-top:2px;">Faça login com sua conta Google para adicionar folhas.</div>
+      <h3 style="margin-bottom:8px;font-size:1.1rem;font-weight:800;">Configurações</h3>
+      <div style="background:var(--sub);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px;">
+        <div id="user-info-text" style="font-size:0.84rem;font-weight:700;">Não conectado</div>
+        <div id="admin-badge-txt" style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Faça login com sua conta Google para adicionar folhas.</div>
       </div>
-      <button class="btn btn-sub" id="btn-export">📥 Fazer Backup (JSON)</button>
+      <button class="btn btn-sub" id="btn-export" style="display:none;">📥 Fazer Backup Geral (JSON)</button>
     </div>
   </main>
 
@@ -142,33 +107,30 @@
   <!-- FORMULÁRIO -->
   <div class="modal" id="modal-form">
     <div class="sheet">
-      <div class="flex-b" style="margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);">
+      <div class="flex-b" style="margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line);">
         <h4 id="form-title" class="sheet-title">＋ Nova Folha</h4>
         <button class="btn-close" onclick="closeModals()">✕</button>
       </div>
       <input type="hidden" id="f-id"><input type="hidden" id="f-lat"><input type="hidden" id="f-lng">
-
       <div class="field">
         <label>Nome da Planta / Folha *</label>
         <input type="text" id="f-name" class="input-box" placeholder="Ex: Arruda, Guiné, Alecrim">
       </div>
-
       <div class="field">
         <label>Horário de Retirada</label>
         <div class="grid-2">
           <div class="type-opt day selected" id="opt-day" onclick="setType('qualquer_horario')">
-            <div style="font-size:1.1rem; margin-bottom:2px;">🕐</div>
-            <div style="font-size:0.78rem; font-weight:700;">Qualquer Horário</div>
+            <div style="font-size:1.1rem;margin-bottom:2px;">🕐</div>
+            <div style="font-size:0.78rem;font-weight:700;">Qualquer Horário</div>
             <div style="font-size:0.66rem;" class="text-muted">Acesso tranquilo</div>
           </div>
           <div class="type-opt night" id="opt-night" onclick="setType('movimentado')">
-            <div style="font-size:1.1rem; margin-bottom:2px;">🌙</div>
-            <div style="font-size:0.78rem; font-weight:700;">Após 00h</div>
+            <div style="font-size:1.1rem;margin-bottom:2px;">🌙</div>
+            <div style="font-size:0.78rem;font-weight:700;">Após 00h</div>
             <div style="font-size:0.66rem;" class="text-muted">Rua movimentada</div>
           </div>
         </div>
       </div>
-
       <div class="field">
         <label>Localização (Rua) *</label>
         <div class="tab-wrap">
@@ -176,49 +138,47 @@
           <button type="button" class="tab-btn" id="tab-addr" onclick="setLocMode('addr')">✍️ Digitar Rua</button>
         </div>
         <div id="panel-gps">
-          <button type="button" class="btn btn-sub" onclick="getGPS(false)" style="font-size:0.8rem; padding:8px;">🔄 Atualizar e Detectar Rua</button>
-          <div id="coord-txt" style="font-size:0.72rem; margin-top:4px;" class="text-muted">Obtendo rua pelo GPS...</div>
+          <button type="button" class="btn btn-sub" onclick="getGPS(false)" style="font-size:0.8rem;padding:8px;">🔄 Atualizar e Detectar Rua</button>
+          <div id="coord-txt" style="font-size:0.72rem;margin-top:4px;" class="text-muted">Obtendo rua pelo GPS...</div>
         </div>
         <div id="panel-addr" style="display:none;">
           <div class="flex-c gap-6">
             <input type="text" id="f-address" class="input-box" placeholder="Ex: Rua das Flores, 100, São Paulo">
-            <button type="button" class="btn btn-sub" onclick="searchAddress()" style="width:auto; padding:0 14px; margin-top:0;">Buscar</button>
+            <button type="button" class="btn btn-sub" onclick="searchAddress()" style="width:auto;padding:0 14px;">Buscar</button>
           </div>
-          <div id="addr-txt" style="font-size:0.72rem; margin-top:4px;" class="text-muted">Digite a rua e clique em Buscar.</div>
+          <div id="addr-txt" style="font-size:0.72rem;margin-top:4px;" class="text-muted">Digite a rua e clique em Buscar.</div>
         </div>
       </div>
-
       <div class="field">
         <label>Observações</label>
         <textarea id="f-obs" class="input-box" placeholder="Ex: Próximo à árvore, muro baixo..."></textarea>
       </div>
-
-      <button class="btn btn-green" onclick="saveData()">Salvar Planta</button>
-      <button class="btn btn-del" id="btn-del-form" style="display:none;" onclick="deleteForm()">🗑️ Excluir Folha (Admin)</button>
+      <button class="btn btn-green" onclick="saveData()" style="margin-top:6px;">Salvar Planta</button>
+      <button class="btn btn-del" id="btn-del-form" style="display:none;margin-top:6px;" onclick="deleteForm()">🗑️ Excluir Folha (Admin)</button>
     </div>
   </div>
 
   <!-- DETALHES -->
   <div class="modal" id="modal-details">
     <div class="sheet">
-      <div class="flex-b" style="margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);">
+      <div class="flex-b" style="margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line);">
         <div class="flex-c gap-8">
           <h4 id="det-name" class="sheet-title">Nome</h4>
-          <span id="det-badge" class="pill-tag" style="background:var(--sub); border:1px solid var(--line); padding:2px 8px;">🕐</span>
+          <span id="det-badge" class="pill-tag" style="background:var(--sub);border:1px solid var(--line);padding:2px 8px;">🕐</span>
         </div>
         <button class="btn-close" onclick="closeModals()">✕</button>
       </div>
-      <div id="det-street" style="font-size:0.92rem; font-weight:800; margin-bottom:4px;"></div>
-      <div id="det-dist" style="font-size:0.76rem; font-weight:600; color:var(--green); margin-bottom:12px;"></div>
-      <div style="background:var(--sub); border-radius:12px; padding:12px; font-size:0.82rem; margin-bottom:12px; border:1px solid var(--line);">
-        <strong class="text-muted" style="font-size:0.72rem; text-transform:uppercase;">Observações:</strong>
-        <div id="det-obs" style="margin-top:4px; color:#fff;"></div>
-        <div id="det-author" style="margin-top:8px; font-size:0.72rem; color:var(--muted);"></div>
+      <div id="det-street" style="font-size:0.92rem;font-weight:800;margin-bottom:4px;"></div>
+      <div id="det-dist" style="font-size:0.76rem;font-weight:600;color:var(--green);margin-bottom:12px;"></div>
+      <div style="background:var(--sub);border-radius:12px;padding:12px;font-size:0.82rem;margin-bottom:12px;border:1px solid var(--line);">
+        <strong class="text-muted" style="font-size:0.72rem;text-transform:uppercase;">Observações:</strong>
+        <div id="det-obs" style="margin-top:4px;color:#fff;"></div>
+        <div id="det-author" style="margin-top:8px;font-size:0.72rem;color:var(--muted);"></div>
       </div>
       <button class="btn btn-green" onclick="openRoute()">🧭 Rota no Mapa</button>
-      <div class="flex-c gap-6" style="margin-top:4px;">
+      <div class="flex-c gap-6" style="margin-top:6px;">
         <button class="btn btn-sub" onclick="editDetail()" style="flex:1;">✏️ Editar</button>
-        <button class="btn btn-del" id="btn-del-detail" style="flex:1; display:none;" onclick="deleteDetail()">🗑️ Excluir</button>
+        <button class="btn btn-del" id="btn-del-detail" style="flex:1;display:none;" onclick="deleteDetail()">🗑️ Excluir</button>
       </div>
     </div>
   </div>
@@ -226,16 +186,14 @@
   <!-- VISUALIZADOR DE FOTO -->
   <div class="modal" id="modal-photo">
     <div class="sheet">
-      <div class="flex-b" style="margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);">
+      <div class="flex-b" style="margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line);">
         <h4 id="view-photo-title" class="sheet-title">Foto da Planta</h4>
         <button class="btn-close" onclick="closeModals()">✕</button>
       </div>
-      <div class="photo-viewer-box">
-        <img id="view-photo-img" src="" alt="Foto da Planta">
-      </div>
+      <div class="photo-viewer-box"><img id="view-photo-img" src="" alt="Foto"></div>
       <div class="flex-c gap-6">
         <button class="btn btn-sub" onclick="triggerChangePhoto()" style="flex:1;">📷 Alterar Foto</button>
-        <button class="btn btn-del" id="btn-del-photo" onclick="removePhoto()" style="flex:1; display:none;">🗑️ Remover Foto</button>
+        <button class="btn btn-del" id="btn-del-photo" onclick="removePhoto()" style="flex:1;display:none;">🗑️ Remover Foto</button>
       </div>
     </div>
   </div>
@@ -246,12 +204,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
   <script>
-    // -------------------------------------------------------------
-    // DIGITE SEU E-MAIL DE ADMINISTRADOR AQUI (Ele é o único que pode excluir)
-    // -------------------------------------------------------------
     const ADMIN_EMAIL = "idanmultimidias@gmail.com";
-
-    // Chaves do seu Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAG5AI6GgG4fPoP76Yhos2Xv2K3ATj6ob8",
       authDomain: "mapa-das-folhas.firebaseapp.com",
@@ -261,55 +214,32 @@
       appId: "1:848794491295:web:0f83a18f8e86461008c5aa"
     };
 
-    const isCloudEnabled = Boolean(firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("COLE_AQUI"));
-    let db = null, auth = null, currentUser = null;
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore(), auth = firebase.auth();
+    const $ = id => document.getElementById(id);
 
-    if (isCloudEnabled) {
-      try {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.firestore();
-        auth = firebase.auth();
-      } catch (e) { console.warn("Erro ao iniciar Firebase:", e); }
-    }
-
-    const K_LOC = 'mapa_folhas_v1', K_FOTO = 'mapa_folhas_fotos_v1';
-    let locations = JSON.parse(localStorage.getItem(K_LOC)) || [];
-    let leafPhotos = JSON.parse(localStorage.getItem(K_FOTO)) || {};
-    let map, markersLayer, userLoc = null, curType = 'qualquer_horario', curDetail = null, activeFilter = 'all', detectedStreet = '', targetPhotoKey = null;
+    let locations = [], leafPhotos = {}, currentUser = null, map, markersLayer, userLoc = null;
+    let curType = 'qualquer_horario', curDetail = null, activeFilter = 'all', detectedStreet = '', targetPhotoKey = null;
 
     window.onload = () => {
       map = L.map('map', { zoomControl:false }).setView([-23.5505, -46.6333], 13);
-      
-      // Camada viária nítida idêntica à referência
-      L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-        maxZoom: 20,
-        subdomains: ['0', '1', '2', '3']
-      }).addTo(map);
-
+      L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom:20, subdomains:['0','1','2','3'] }).addTo(map);
       markersLayer = L.layerGroup().addTo(map);
 
-      // Ouvinte de Login do Google
-      if (auth) {
-        auth.onAuthStateChanged(user => {
-          currentUser = user;
-          updateAuthUI();
-        });
-      }
+      auth.onAuthStateChanged(user => { currentUser = user; updateAuthUI(); });
 
-      // Sincronização em tempo real na nuvem
-      if (isCloudEnabled && db) {
-        db.collection('plantas').onSnapshot(snap => {
-          locations = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          renderMap(); renderTotals(); renderCatalog();
-        });
-        db.collection('fotos').doc('catalogo').onSnapshot(doc => {
-          if (doc.exists) leafPhotos = doc.data() || {};
-          renderCatalog();
-        });
-      }
+      db.collection('plantas').onSnapshot(snap => {
+        locations = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderMap(); renderTotals(); renderCatalog();
+      });
 
-      document.getElementById('btn-gps').onclick = () => getGPS(true);
-      document.getElementById('search-input').oninput = renderMap;
+      db.collection('fotos').doc('catalogo').onSnapshot(doc => {
+        if (doc.exists) leafPhotos = doc.data() || {};
+        renderCatalog();
+      });
+
+      $('btn-gps').onclick = () => getGPS(true);
+      $('search-input').oninput = renderMap;
 
       document.querySelectorAll('.pill-btn').forEach(p => {
         p.onclick = () => {
@@ -323,109 +253,91 @@
       document.querySelectorAll('.nav-item').forEach(b => {
         b.onclick = () => {
           if (b.id === 'nav-add') {
-            if (!currentUser && isCloudEnabled) {
-              toast('Faça login com o Google para adicionar');
-              toggleAuth();
-              return;
-            }
-            openForm();
-            return;
+            if (!currentUser) { toast('Faça login com o Google para adicionar'); toggleAuth(); return; }
+            openForm(); return;
           }
           document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
           b.classList.add('active');
           document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
           const t = b.dataset.target;
-          if (t === 'leaves') { renderCatalog(); document.getElementById('view-leaves').classList.add('active'); }
-          else if (t === 'settings') { document.getElementById('view-settings').classList.add('active'); }
+          if (t === 'leaves') { renderCatalog(); $('view-leaves').classList.add('active'); }
+          else if (t === 'settings') { $('view-settings').classList.add('active'); }
           else { setTimeout(() => map.invalidateSize(), 200); }
         };
       });
 
-      document.getElementById('btn-export').onclick = () => {
+      $('btn-export').onclick = () => {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([JSON.stringify({ locations, leafPhotos }, null, 2)], { type:'application/json' }));
         a.download = 'backup-folhas.json'; a.click();
       };
 
-      document.getElementById('cat-photo-inp').onchange = saveCatalogPhoto;
-
-      getGPS(false); renderMap(); renderTotals(); renderCatalog();
+      $('cat-photo-inp').onchange = saveCatalogPhoto;
+      getGPS(false);
     };
 
-    function isAdmin() {
-      if (!currentUser) return false;
-      return currentUser.email.toLowerCase() === ADMIN_EMAIL.trim().toLowerCase();
-    }
+    const isAdmin = () => Boolean(currentUser?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase());
 
     function toggleAuth() {
-      if (!auth) return toast('Firebase não configurado.');
       if (currentUser) {
-        if (confirm(`Desconectar de ${currentUser.displayName || currentUser.email}?`)) {
-          auth.signOut().then(() => toast('Desconectado!'));
-        }
+        if (confirm(`Desconectar de ${currentUser.displayName || currentUser.email}?`)) auth.signOut().then(() => toast('Desconectado!'));
       } else {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(err => {
-          console.warn("Popup bloqueado, tentando redirect...", err);
-          auth.signInWithRedirect(provider);
-        });
+        const p = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(p).catch(() => auth.signInWithRedirect(p));
       }
     }
 
     function updateAuthUI() {
-      const btn = document.getElementById('btn-auth');
-      const info = document.getElementById('user-info-text');
-      const badge = document.getElementById('admin-badge-txt');
-
+      const btn = $('btn-auth'), info = $('user-info-text'), badge = $('admin-badge-txt'), exportBtn = $('btn-export');
       if (currentUser) {
         btn.innerHTML = `<img src="${currentUser.photoURL || ''}" class="user-avatar"><span>${currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Conta'}</span>`;
-        info.innerHTML = `👤 ${currentUser.displayName || ''} <br><span style="font-size:0.75rem; color:var(--muted);">${currentUser.email}</span>`;
-        badge.innerHTML = isAdmin() ? '⭐ <strong>Administrador Geral</strong> (Pode cadastrar e excluir)' : '✅ Colaborador (Pode cadastrar plantas)';
+        info.innerHTML = `👤 ${currentUser.displayName || ''} <br><span style="font-size:0.75rem;color:var(--muted);">${currentUser.email}</span>`;
+        badge.innerHTML = isAdmin() ? '⭐ <strong>Administrador Geral</strong> (Pode cadastrar, excluir e fazer backup)' : '✅ Colaborador (Pode cadastrar plantas)';
+        exportBtn.style.display = isAdmin() ? 'block' : 'none';
       } else {
         btn.innerHTML = `<span>🔑 Entrar com Google</span>`;
         info.textContent = 'Não conectado';
         badge.textContent = 'Faça login com sua conta Google para adicionar folhas.';
+        exportBtn.style.display = 'none';
       }
     }
 
     function toast(m) {
-      const t = document.getElementById('toast');
-      t.textContent = m; t.classList.add('show');
+      const t = $('toast'); t.textContent = m; t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), 2000);
     }
 
     function setType(t) {
       curType = t;
-      document.getElementById('opt-night').classList.toggle('selected', t === 'movimentado');
-      document.getElementById('opt-day').classList.toggle('selected', t === 'qualquer_horario');
+      $('opt-night').classList.toggle('selected', t === 'movimentado');
+      $('opt-day').classList.toggle('selected', t === 'qualquer_horario');
     }
 
     function setLocMode(m) {
       const isGps = m === 'gps';
-      document.getElementById('tab-gps').classList.toggle('active', isGps);
-      document.getElementById('tab-addr').classList.toggle('active', !isGps);
-      document.getElementById('panel-gps').style.display = isGps ? 'block' : 'none';
-      document.getElementById('panel-addr').style.display = !isGps ? 'block' : 'none';
-      if (isGps && !document.getElementById('f-lat').value) getGPS(false);
+      $('tab-gps').classList.toggle('active', isGps);
+      $('tab-addr').classList.toggle('active', !isGps);
+      $('panel-gps').style.display = isGps ? 'block' : 'none';
+      $('panel-addr').style.display = !isGps ? 'block' : 'none';
+      if (isGps && !$('f-lat').value) getGPS(false);
     }
 
-    function parseRoad(it) {
-      if (!it) return '';
-      const a = it.address;
+    const parseRoad = it => {
+      const a = it?.address;
       if (a) {
         const r = a.road || a.street || a.pedestrian || a.avenue;
         if (r) return r + (a.house_number ? `, ${a.house_number}` : '');
       }
-      return (it.display_name || '').split(',')[0].trim();
-    }
+      return (it?.display_name || '').split(',')[0].trim();
+    };
 
     function searchAddress() {
-      const q = document.getElementById('f-address').value.trim(), s = document.getElementById('addr-txt');
+      const q = $('f-address').value.trim(), s = $('addr-txt');
       if (!q) return alert('Digite a rua.');
       s.textContent = 'Buscando rua...';
       fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(q)}&limit=1`)
         .then(r => r.json()).then(d => {
-          if (d && d.length) {
+          if (d?.length) {
             const lat = parseFloat(d[0].lat), lng = parseFloat(d[0].lon);
             detectedStreet = parseRoad(d[0]) || q;
             setCoords(lat, lng, `📍 Rua: ${detectedStreet}`);
@@ -446,92 +358,59 @@
       navigator.geolocation.getCurrentPosition(p => {
         userLoc = { lat: p.coords.latitude, lng: p.coords.longitude };
         reverseRoad(userLoc.lat, userLoc.lng, st => {
-          detectedStreet = st;
-          setCoords(userLoc.lat, userLoc.lng, `📍 Rua: ${detectedStreet}`);
+          detectedStreet = st; setCoords(userLoc.lat, userLoc.lng, `📍 Rua: ${detectedStreet}`);
         });
         if (center) { map.setView([userLoc.lat, userLoc.lng], 16); toast('Posição centralizada!'); }
-      }, () => { document.getElementById('coord-txt').textContent = '⚠️ GPS indisponível'; }, { enableHighAccuracy:true, timeout:8000 });
+      }, () => { $('coord-txt').textContent = '⚠️ GPS indisponível'; }, { enableHighAccuracy:true, timeout:8000 });
     }
 
     function setCoords(lat, lng, txt) {
-      document.getElementById('f-lat').value = lat;
-      document.getElementById('f-lng').value = lng;
-      document.getElementById('coord-txt').textContent = txt;
+      $('f-lat').value = lat; $('f-lng').value = lng; $('coord-txt').textContent = txt;
     }
 
     function openForm(item = null) {
       closeModals(); setLocMode('gps');
-      document.getElementById('f-address').value = '';
-      document.getElementById('addr-txt').textContent = 'Digite a rua e clique em Buscar.';
-      const btnDel = document.getElementById('btn-del-form');
-
-      // Botão excluir só aparece se for Admin
-      btnDel.style.display = (item && isAdmin()) ? 'block' : 'none';
+      $('f-address').value = ''; $('addr-txt').textContent = 'Digite a rua e clique em Buscar.';
+      $('btn-del-form').style.display = (item && isAdmin()) ? 'block' : 'none';
 
       if (item) {
-        document.getElementById('form-title').textContent = '✏️ Editar Folha';
-        document.getElementById('f-id').value = item.id;
-        document.getElementById('f-name').value = item.name;
-        document.getElementById('f-obs').value = item.obs || '';
+        $('form-title').textContent = '✏️ Editar Folha';
+        $('f-id').value = item.id; $('f-name').value = item.name; $('f-obs').value = item.obs || '';
         detectedStreet = item.street || '';
-        setCoords(item.lat, item.lng, `📍 Rua: ${detectedStreet}`);
-        setType(item.type);
+        setCoords(item.lat, item.lng, `📍 Rua: ${detectedStreet}`); setType(item.type);
       } else {
-        document.getElementById('form-title').textContent = '＋ Nova Folha';
-        document.getElementById('f-id').value = '';
-        document.getElementById('f-name').value = '';
-        document.getElementById('f-obs').value = '';
-        detectedStreet = '';
+        $('form-title').textContent = '＋ Nova Folha';
+        $('f-id').value = ''; $('f-name').value = ''; $('f-obs').value = ''; detectedStreet = '';
         setType('qualquer_horario');
         if (userLoc) {
           setCoords(userLoc.lat, userLoc.lng, 'Obtendo rua...');
-          reverseRoad(userLoc.lat, userLoc.lng, st => {
-            detectedStreet = st; setCoords(userLoc.lat, userLoc.lng, `📍 Rua: ${detectedStreet}`);
-          });
+          reverseRoad(userLoc.lat, userLoc.lng, st => { detectedStreet = st; setCoords(userLoc.lat, userLoc.lng, `📍 Rua: ${detectedStreet}`); });
         } else { getGPS(false); }
       }
-      document.getElementById('modal-form').classList.add('active');
+      $('modal-form').classList.add('active');
     }
 
-    function closeModals() {
-      document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-    }
+    const closeModals = () => document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
 
     async function saveData() {
-      const name = document.getElementById('f-name').value.trim();
-      let lat = parseFloat(document.getElementById('f-lat').value);
-      let lng = parseFloat(document.getElementById('f-lng').value);
-      const obs = document.getElementById('f-obs').value.trim();
-      const id = document.getElementById('f-id').value;
-
+      const name = $('f-name').value.trim(), obs = $('f-obs').value.trim(), id = $('f-id').value;
+      let lat = parseFloat($('f-lat').value), lng = parseFloat($('f-lng').value);
       if (!name) return alert('Informe o nome da planta.');
       if (isNaN(lat) || isNaN(lng)) { const c = map.getCenter(); lat = c.lat; lng = c.lng; }
 
-      const street = detectedStreet || document.getElementById('f-address').value.trim() || `Rua sem nome (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+      const street = detectedStreet || $('f-address').value.trim() || `Rua sem nome (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
       const author = currentUser ? (currentUser.displayName || currentUser.email) : 'Anônimo';
+      const payload = { name, lat, lng, obs, street, type:curType, author };
 
-      const payload = { name, lat, lng, obs, street, type: curType, author };
-
-      if (isCloudEnabled && db) {
-        if (id) await db.collection('plantas').doc(id).update(payload);
-        else await db.collection('plantas').add(payload);
-      } else {
-        if (id) {
-          const i = locations.findIndex(x => x.id === id);
-          if (i !== -1) locations[i] = { ...locations[i], ...payload };
-        } else {
-          locations.push({ id:'f_' + Date.now(), ...payload });
-        }
-        localStorage.setItem(K_LOC, JSON.stringify(locations));
-        renderMap(); renderTotals(); renderCatalog();
-      }
+      if (id) await db.collection('plantas').doc(id).update(payload);
+      else await db.collection('plantas').add(payload);
 
       closeModals(); map.setView([lat, lng], 16); toast('Planta salva!');
     }
 
     function renderMap() {
       markersLayer.clearLayers();
-      const q = document.getElementById('search-input').value.trim().toLowerCase();
+      const q = $('search-input').value.trim().toLowerCase();
       locations.forEach(l => {
         if (activeFilter !== 'all' && l.type !== activeFilter) return;
         if (q && !l.name.toLowerCase().includes(q) && !(l.street || '').toLowerCase().includes(q)) return;
@@ -548,60 +427,43 @@
 
     function openDetails(it) {
       curDetail = it;
-      document.getElementById('det-name').textContent = it.name;
-      document.getElementById('det-badge').textContent = it.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário';
-      document.getElementById('det-street').textContent = `📍 ${it.street || 'Rua sem identificação'}`;
-      document.getElementById('det-obs').textContent = it.obs || 'Nenhuma observação cadastrada.';
-      document.getElementById('det-author').textContent = it.author ? `Cadastrado por: ${it.author}` : '';
-
-      // Mostra o botão de excluir detalhes apenas para o Admin
-      const btnDel = document.getElementById('btn-del-detail');
-      btnDel.style.display = isAdmin() ? 'block' : 'none';
+      $('det-name').textContent = it.name;
+      $('det-badge').textContent = it.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário';
+      $('det-street').textContent = `📍 ${it.street || 'Rua sem identificação'}`;
+      $('det-obs').textContent = it.obs || 'Nenhuma observação cadastrada.';
+      $('det-author').textContent = it.author ? `Cadastrado por: ${it.author}` : '';
+      $('btn-del-detail').style.display = isAdmin() ? 'block' : 'none';
 
       if (userLoc) {
         const d = dist(userLoc.lat, userLoc.lng, it.lat, it.lng);
-        document.getElementById('det-dist').textContent = `${d < 1 ? Math.round(d * 1000) + ' metros' : d.toFixed(1) + ' km'} de você`;
+        $('det-dist').textContent = `${d < 1 ? Math.round(d * 1000) + ' metros' : d.toFixed(1) + ' km'} de você`;
       } else {
-        document.getElementById('det-dist').textContent = `${it.lat.toFixed(4)}, ${it.lng.toFixed(4)}`;
+        $('det-dist').textContent = `${it.lat.toFixed(4)}, ${it.lng.toFixed(4)}`;
       }
-      document.getElementById('modal-details').classList.add('active');
+      $('modal-details').classList.add('active');
     }
 
     function handlePhotoClick(leafKey) {
       targetPhotoKey = leafKey.trim().toUpperCase();
       const photo = leafPhotos[targetPhotoKey];
       if (photo) {
-        document.getElementById('view-photo-title').textContent = `🌿 ${targetPhotoKey}`;
-        document.getElementById('view-photo-img').src = photo;
-        
-        // Remover foto somente se for admin
-        document.getElementById('btn-del-photo').style.display = isAdmin() ? 'block' : 'none';
-        
-        document.getElementById('modal-photo').classList.add('active');
+        $('view-photo-title').textContent = `🌿 ${targetPhotoKey}`;
+        $('view-photo-img').src = photo;
+        $('btn-del-photo').style.display = isAdmin() ? 'block' : 'none';
+        $('modal-photo').classList.add('active');
       } else {
-        if (!currentUser && isCloudEnabled) {
-          toast('Faça login com o Google para adicionar fotos');
-          toggleAuth();
-          return;
-        }
+        if (!currentUser) { toast('Faça login com o Google para adicionar fotos'); toggleAuth(); return; }
         triggerChangePhoto();
       }
     }
 
-    function triggerChangePhoto() {
-      closeModals();
-      document.getElementById('cat-photo-inp').click();
-    }
+    function triggerChangePhoto() { closeModals(); $('cat-photo-inp').click(); }
 
     async function removePhoto() {
       if (!isAdmin()) return alert('Apenas o administrador pode remover fotos.');
       if (!targetPhotoKey || !confirm('Deseja remover a foto desta folha?')) return;
       delete leafPhotos[targetPhotoKey];
-      if (isCloudEnabled && db) {
-        await db.collection('fotos').doc('catalogo').set(leafPhotos);
-      } else {
-        localStorage.setItem(K_FOTO, JSON.stringify(leafPhotos));
-      }
+      await db.collection('fotos').doc('catalogo').set(leafPhotos);
       closeModals(); renderCatalog(); toast('Foto removida!');
     }
 
@@ -620,11 +482,7 @@
           cvs.getContext('2d').drawImage(img, 0, 0, w, h);
           const base64 = cvs.toDataURL('image/jpeg', 0.65);
           leafPhotos[targetPhotoKey] = base64;
-          if (isCloudEnabled && db) {
-            await db.collection('fotos').doc('catalogo').set({ [targetPhotoKey]: base64 }, { merge: true });
-          } else {
-            localStorage.setItem(K_FOTO, JSON.stringify(leafPhotos));
-          }
+          await db.collection('fotos').doc('catalogo').set({ [targetPhotoKey]: base64 }, { merge: true });
           renderCatalog(); toast('Foto atualizada!');
         };
         img.src = ev.target.result;
@@ -634,10 +492,9 @@
     }
 
     function renderCatalog() {
-      const list = document.getElementById('leaves-list');
-      list.innerHTML = '';
+      const list = $('leaves-list'); list.innerHTML = '';
       if (!locations.length) {
-        list.innerHTML = '<p class="text-muted" style="font-size:0.8rem; text-align:center; padding:24px 0;">Nenhuma folha cadastrada ainda.</p>';
+        list.innerHTML = '<p class="text-muted" style="font-size:0.8rem;text-align:center;padding:24px 0;">Nenhuma folha cadastrada ainda.</p>';
         return;
       }
       const groups = {};
@@ -653,9 +510,7 @@
         card.className = 'catalog-card';
         card.innerHTML = `
           <div class="card-head">
-            <div class="photo-thumb" onclick="handlePhotoClick('${k}')" title="Toque para ver ou alterar foto">
-              ${photo ? `<img src="${photo}" alt="">` : `📷`}
-            </div>
+            <div class="photo-thumb" onclick="handlePhotoClick('${k}')" title="Ver ou alterar foto">${photo ? `<img src="${photo}" alt="">` : `📷`}</div>
             <div class="head-info" onclick="this.closest('.catalog-card').classList.toggle('open')">
               <div class="flex-b">
                 <strong style="font-size:0.95rem;">🌿 ${k}</strong>
@@ -667,10 +522,10 @@
             ${items.map(it => `
               <div class="addr-row flex-b" onclick="navigateLeaf('${it.id}')">
                 <div>
-                  <div style="font-size:0.82rem; font-weight:700;">📍 ${it.street || 'Rua sem nome'}</div>
+                  <div style="font-size:0.82rem;font-weight:700;">📍 ${it.street || 'Rua sem nome'}</div>
                   <div style="font-size:0.68rem;" class="text-muted">${it.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário'}</div>
                 </div>
-                <span style="color:var(--green); font-size:1rem; font-weight:700;">➔</span>
+                <span style="color:var(--green);font-size:1rem;font-weight:700;">➔</span>
               </div>
             `).join('')}
           </div>
@@ -689,32 +544,20 @@
       setTimeout(() => { map.invalidateSize(); openDetails(it); }, 250);
     }
 
-    function editDetail() { const it = curDetail; closeModals(); openForm(it); }
+    const editDetail = () => { const it = curDetail; closeModals(); openForm(it); };
 
     async function deleteDetail() {
       if (!isAdmin()) return alert('Apenas o administrador pode excluir.');
       if (!curDetail || !confirm('Deseja excluir este registro?')) return;
-      if (isCloudEnabled && db) {
-        await db.collection('plantas').doc(curDetail.id).delete();
-      } else {
-        locations = locations.filter(x => x.id !== curDetail.id);
-        localStorage.setItem(K_LOC, JSON.stringify(locations));
-        renderMap(); renderTotals(); renderCatalog();
-      }
+      await db.collection('plantas').doc(curDetail.id).delete();
       closeModals(); toast('Excluído!');
     }
 
     async function deleteForm() {
       if (!isAdmin()) return alert('Apenas o administrador pode excluir.');
-      const id = document.getElementById('f-id').value;
+      const id = $('f-id').value;
       if (!id || !confirm('Deseja excluir esta folha?')) return;
-      if (isCloudEnabled && db) {
-        await db.collection('plantas').doc(id).delete();
-      } else {
-        locations = locations.filter(x => x.id !== id);
-        localStorage.setItem(K_LOC, JSON.stringify(locations));
-        renderMap(); renderTotals(); renderCatalog();
-      }
+      await db.collection('plantas').doc(id).delete();
       closeModals(); toast('Excluído!');
     }
 
@@ -724,9 +567,7 @@
       window.open(`https://www.google.com/maps/dir/?api=1&destination=${curDetail.lat},${curDetail.lng}${o ? `&origin=${o}` : ''}`, '_blank');
     }
 
-    function renderTotals() {
-      document.getElementById('total-badge').textContent = `${locations.length} locais`;
-    }
+    const renderTotals = () => { $('total-badge').textContent = `${locations.length} locais`; };
 
     function dist(lat1, lon1, lat2, lon2) {
       const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
