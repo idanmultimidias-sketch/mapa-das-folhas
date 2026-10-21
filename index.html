@@ -25,6 +25,8 @@
     header { background:rgba(9,10,15,0.94); backdrop-filter:blur(10px); padding:10px 14px 8px; z-index:1000; border-bottom:1px solid var(--line); }
     .brand { font-size:1.05rem; font-weight:800; }
     .badge-total { background:var(--sub); border:1px solid var(--line); padding:2px 10px; color:var(--green); }
+    .user-btn { background:var(--sub); border:1px solid var(--line); border-radius:var(--pill); padding:3px 8px 3px 4px; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.72rem; font-weight:700; color:#fff; }
+    .user-avatar { width:22px; height:22px; border-radius:50%; object-fit:cover; }
     .search-inp { padding:8px 14px; border-radius:var(--pill); border:1px solid var(--line); background:var(--card); color:#fff; font-size:0.84rem; outline:none; font-family:inherit; margin:8px 0; }
     .filter-bar { display:flex; gap:6px; overflow-x:auto; }
     .pill-btn { padding:5px 12px; background:var(--card); border:1px solid var(--line); color:var(--muted); cursor:pointer; white-space:nowrap; }
@@ -95,7 +97,12 @@
   <header>
     <div class="flex-b">
       <div class="brand flex-c gap-6">🌿 <span>Mapa das Folhas</span></div>
-      <div id="total-badge" class="badge-total pill-tag">0 locais</div>
+      <div class="flex-c gap-6">
+        <div id="total-badge" class="badge-total pill-tag">0 locais</div>
+        <button id="btn-auth" class="user-btn" onclick="toggleAuth()">
+          <span>🔑 Entrar com Google</span>
+        </button>
+      </div>
     </div>
     <input type="text" id="search-input" class="search-inp w-100" placeholder="Buscar folha ou rua...">
     <div class="filter-bar">
@@ -117,9 +124,11 @@
 
     <div class="view" id="view-settings">
       <h3 style="margin-bottom:8px; font-size:1.1rem; font-weight:800;">Configurações</h3>
-      <p id="cloud-status" style="font-size:0.8rem; margin-bottom:14px;" class="text-muted">Sincronização: Local (Configure o Firebase para Nuvem)</p>
+      <div style="background:var(--sub); border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:14px;">
+        <div id="user-info-text" style="font-size:0.84rem; font-weight:700;">Não conectado</div>
+        <div id="admin-badge-txt" style="font-size:0.72rem; color:var(--muted); margin-top:2px;">Faça login com sua conta Google para adicionar folhas.</div>
+      </div>
       <button class="btn btn-sub" id="btn-export">📥 Fazer Backup (JSON)</button>
-      <button class="btn btn-del" id="btn-clear" style="margin-top:10px;">🗑️ Limpar Dados Locais</button>
     </div>
   </main>
 
@@ -130,7 +139,7 @@
     <button class="nav-item" data-target="settings"><span>⚙️</span><span>Ajustes</span></button>
   </nav>
 
-  <!-- FORMULÁRIO (SEM FOTO) -->
+  <!-- FORMULÁRIO -->
   <div class="modal" id="modal-form">
     <div class="sheet">
       <div class="flex-b" style="margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);">
@@ -185,7 +194,7 @@
       </div>
 
       <button class="btn btn-green" onclick="saveData()">Salvar Planta</button>
-      <button class="btn btn-del" id="btn-del-form" style="display:none;" onclick="deleteForm()">🗑️ Excluir Folha</button>
+      <button class="btn btn-del" id="btn-del-form" style="display:none;" onclick="deleteForm()">🗑️ Excluir Folha (Admin)</button>
     </div>
   </div>
 
@@ -204,11 +213,12 @@
       <div style="background:var(--sub); border-radius:12px; padding:12px; font-size:0.82rem; margin-bottom:12px; border:1px solid var(--line);">
         <strong class="text-muted" style="font-size:0.72rem; text-transform:uppercase;">Observações:</strong>
         <div id="det-obs" style="margin-top:4px; color:#fff;"></div>
+        <div id="det-author" style="margin-top:8px; font-size:0.72rem; color:var(--muted);"></div>
       </div>
       <button class="btn btn-green" onclick="openRoute()">🧭 Rota no Mapa</button>
       <div class="flex-c gap-6" style="margin-top:4px;">
         <button class="btn btn-sub" onclick="editDetail()" style="flex:1;">✏️ Editar</button>
-        <button class="btn btn-del" onclick="deleteDetail()" style="flex:1;">🗑️ Excluir</button>
+        <button class="btn btn-del" id="btn-del-detail" style="flex:1; display:none;" onclick="deleteDetail()">🗑️ Excluir</button>
       </div>
     </div>
   </div>
@@ -225,7 +235,7 @@
       </div>
       <div class="flex-c gap-6">
         <button class="btn btn-sub" onclick="triggerChangePhoto()" style="flex:1;">📷 Alterar Foto</button>
-        <button class="btn btn-del" onclick="removePhoto()" style="flex:1;">🗑️ Remover Foto</button>
+        <button class="btn btn-del" id="btn-del-photo" onclick="removePhoto()" style="flex:1; display:none;">🗑️ Remover Foto</button>
       </div>
     </div>
   </div>
@@ -233,9 +243,15 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
   <script>
-    // Cole aqui as chaves geradas no Firebase para ativar a nuvem compartilhada
+    // -------------------------------------------------------------
+    // DIGITE SEU E-MAIL DE ADMINISTRADOR AQUI (Ele é o único que pode excluir)
+    // -------------------------------------------------------------
+    const ADMIN_EMAIL = "idanmultimidias@gmail.com";
+
+    // Chaves do seu Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAG5AI6GgG4fPoP76Yhos2Xv2K3ATj6ob8",
       authDomain: "mapa-das-folhas.firebaseapp.com",
@@ -246,11 +262,13 @@
     };
 
     const isCloudEnabled = Boolean(firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("COLE_AQUI"));
-    let db = null;
+    let db = null, auth = null, currentUser = null;
+
     if (isCloudEnabled) {
       try {
         firebase.initializeApp(firebaseConfig);
         db = firebase.firestore();
+        auth = firebase.auth();
       } catch (e) { console.warn("Erro ao iniciar Firebase:", e); }
     }
 
@@ -262,7 +280,7 @@
     window.onload = () => {
       map = L.map('map', { zoomControl:false }).setView([-23.5505, -46.6333], 13);
       
-      // Camada viária nítida idêntica à referência visual
+      // Camada viária nítida idêntica à referência
       L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
         maxZoom: 20,
         subdomains: ['0', '1', '2', '3']
@@ -270,8 +288,16 @@
 
       markersLayer = L.layerGroup().addTo(map);
 
+      // Ouvinte de Login do Google
+      if (auth) {
+        auth.onAuthStateChanged(user => {
+          currentUser = user;
+          updateAuthUI();
+        });
+      }
+
+      // Sincronização em tempo real na nuvem
       if (isCloudEnabled && db) {
-        document.getElementById('cloud-status').textContent = 'Sincronização: Nuvem Ativa (Compartilhado em tempo real)';
         db.collection('plantas').onSnapshot(snap => {
           locations = snap.docs.map(d => ({ id: d.id, ...d.data() }));
           renderMap(); renderTotals(); renderCatalog();
@@ -296,7 +322,15 @@
 
       document.querySelectorAll('.nav-item').forEach(b => {
         b.onclick = () => {
-          if (b.id === 'nav-add') { openForm(); return; }
+          if (b.id === 'nav-add') {
+            if (!currentUser && isCloudEnabled) {
+              toast('Faça login com o Google para adicionar');
+              toggleAuth();
+              return;
+            }
+            openForm();
+            return;
+          }
           document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
           b.classList.add('active');
           document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -313,18 +347,46 @@
         a.download = 'backup-folhas.json'; a.click();
       };
 
-      document.getElementById('btn-clear').onclick = () => {
-        if (confirm('Deseja apagar todos os dados locais?')) {
-          locations = []; leafPhotos = {};
-          localStorage.removeItem(K_LOC); localStorage.removeItem(K_FOTO);
-          closeModals(); renderMap(); renderTotals(); renderCatalog(); toast('Dados locais apagados!');
-        }
-      };
-
       document.getElementById('cat-photo-inp').onchange = saveCatalogPhoto;
 
       getGPS(false); renderMap(); renderTotals(); renderCatalog();
     };
+
+    function isAdmin() {
+      if (!currentUser) return false;
+      return currentUser.email.toLowerCase() === ADMIN_EMAIL.trim().toLowerCase();
+    }
+
+    function toggleAuth() {
+      if (!auth) return toast('Firebase não configurado.');
+      if (currentUser) {
+        if (confirm(`Desconectar de ${currentUser.displayName || currentUser.email}?`)) {
+          auth.signOut().then(() => toast('Desconectado!'));
+        }
+      } else {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).catch(err => {
+          console.warn("Popup bloqueado, tentando redirect...", err);
+          auth.signInWithRedirect(provider);
+        });
+      }
+    }
+
+    function updateAuthUI() {
+      const btn = document.getElementById('btn-auth');
+      const info = document.getElementById('user-info-text');
+      const badge = document.getElementById('admin-badge-txt');
+
+      if (currentUser) {
+        btn.innerHTML = `<img src="${currentUser.photoURL || ''}" class="user-avatar"><span>${currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Conta'}</span>`;
+        info.innerHTML = `👤 ${currentUser.displayName || ''} <br><span style="font-size:0.75rem; color:var(--muted);">${currentUser.email}</span>`;
+        badge.innerHTML = isAdmin() ? '⭐ <strong>Administrador Geral</strong> (Pode cadastrar e excluir)' : '✅ Colaborador (Pode cadastrar plantas)';
+      } else {
+        btn.innerHTML = `<span>🔑 Entrar com Google</span>`;
+        info.textContent = 'Não conectado';
+        badge.textContent = 'Faça login com sua conta Google para adicionar folhas.';
+      }
+    }
 
     function toast(m) {
       const t = document.getElementById('toast');
@@ -402,9 +464,12 @@
       document.getElementById('f-address').value = '';
       document.getElementById('addr-txt').textContent = 'Digite a rua e clique em Buscar.';
       const btnDel = document.getElementById('btn-del-form');
+
+      // Botão excluir só aparece se for Admin
+      btnDel.style.display = (item && isAdmin()) ? 'block' : 'none';
+
       if (item) {
         document.getElementById('form-title').textContent = '✏️ Editar Folha';
-        btnDel.style.display = 'block';
         document.getElementById('f-id').value = item.id;
         document.getElementById('f-name').value = item.name;
         document.getElementById('f-obs').value = item.obs || '';
@@ -413,7 +478,6 @@
         setType(item.type);
       } else {
         document.getElementById('form-title').textContent = '＋ Nova Folha';
-        btnDel.style.display = 'none';
         document.getElementById('f-id').value = '';
         document.getElementById('f-name').value = '';
         document.getElementById('f-obs').value = '';
@@ -444,7 +508,9 @@
       if (isNaN(lat) || isNaN(lng)) { const c = map.getCenter(); lat = c.lat; lng = c.lng; }
 
       const street = detectedStreet || document.getElementById('f-address').value.trim() || `Rua sem nome (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
-      const payload = { name, lat, lng, obs, street, type: curType };
+      const author = currentUser ? (currentUser.displayName || currentUser.email) : 'Anônimo';
+
+      const payload = { name, lat, lng, obs, street, type: curType, author };
 
       if (isCloudEnabled && db) {
         if (id) await db.collection('plantas').doc(id).update(payload);
@@ -486,6 +552,11 @@
       document.getElementById('det-badge').textContent = it.type === 'movimentado' ? '🌙 Após 00h' : '🕐 Qualquer horário';
       document.getElementById('det-street').textContent = `📍 ${it.street || 'Rua sem identificação'}`;
       document.getElementById('det-obs').textContent = it.obs || 'Nenhuma observação cadastrada.';
+      document.getElementById('det-author').textContent = it.author ? `Cadastrado por: ${it.author}` : '';
+
+      // Mostra o botão de excluir detalhes apenas para o Admin
+      const btnDel = document.getElementById('btn-del-detail');
+      btnDel.style.display = isAdmin() ? 'block' : 'none';
 
       if (userLoc) {
         const d = dist(userLoc.lat, userLoc.lng, it.lat, it.lng);
@@ -502,8 +573,17 @@
       if (photo) {
         document.getElementById('view-photo-title').textContent = `🌿 ${targetPhotoKey}`;
         document.getElementById('view-photo-img').src = photo;
+        
+        // Remover foto somente se for admin
+        document.getElementById('btn-del-photo').style.display = isAdmin() ? 'block' : 'none';
+        
         document.getElementById('modal-photo').classList.add('active');
       } else {
+        if (!currentUser && isCloudEnabled) {
+          toast('Faça login com o Google para adicionar fotos');
+          toggleAuth();
+          return;
+        }
         triggerChangePhoto();
       }
     }
@@ -514,6 +594,7 @@
     }
 
     async function removePhoto() {
+      if (!isAdmin()) return alert('Apenas o administrador pode remover fotos.');
       if (!targetPhotoKey || !confirm('Deseja remover a foto desta folha?')) return;
       delete leafPhotos[targetPhotoKey];
       if (isCloudEnabled && db) {
@@ -611,6 +692,7 @@
     function editDetail() { const it = curDetail; closeModals(); openForm(it); }
 
     async function deleteDetail() {
+      if (!isAdmin()) return alert('Apenas o administrador pode excluir.');
       if (!curDetail || !confirm('Deseja excluir este registro?')) return;
       if (isCloudEnabled && db) {
         await db.collection('plantas').doc(curDetail.id).delete();
@@ -623,6 +705,7 @@
     }
 
     async function deleteForm() {
+      if (!isAdmin()) return alert('Apenas o administrador pode excluir.');
       const id = document.getElementById('f-id').value;
       if (!id || !confirm('Deseja excluir esta folha?')) return;
       if (isCloudEnabled && db) {
