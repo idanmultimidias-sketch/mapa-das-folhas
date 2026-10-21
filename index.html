@@ -16,14 +16,12 @@
     * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
     body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--txt); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
 
-    /* Classes Utilitárias */
     .flex-b { display:flex; justify-content:space-between; align-items:center; }
     .flex-c { display:flex; align-items:center; }
     .gap-6 { gap:6px; } .gap-8 { gap:8px; }
     .w-100 { width:100%; } .text-muted { color:var(--muted); }
     .pill-tag { border-radius:var(--pill); font-size:0.72rem; font-weight:700; }
 
-    /* Topo e Filtros */
     header { background:rgba(9,10,15,0.94); backdrop-filter:blur(10px); padding:10px 14px 8px; z-index:1000; border-bottom:1px solid var(--line); }
     .brand { font-size:1.05rem; font-weight:800; }
     .badge-total { background:var(--sub); border:1px solid var(--line); padding:2px 10px; color:var(--green); }
@@ -32,22 +30,18 @@
     .pill-btn { padding:5px 12px; background:var(--card); border:1px solid var(--line); color:var(--muted); cursor:pointer; white-space:nowrap; }
     .pill-btn.active { background:#fff; color:#000; border-color:#fff; }
 
-    /* Mapa */
     main { flex:1; position:relative; overflow:hidden; }
     #map { width:100%; height:100%; background:#e5e3df; }
     .gps-btn { position:absolute; right:14px; bottom:20px; z-index:500; width:44px; height:44px; border-radius:50%; background:var(--card); border:1px solid var(--line); color:#fff; box-shadow:0 6px 16px rgba(0,0,0,0.5); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 
-    /* Navegação */
     nav { background:var(--card); border-top:1px solid var(--line); display:flex; justify-content:space-around; padding:6px 0 10px; z-index:1000; }
     .nav-item { background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--muted); font-size:0.7rem; font-weight:700; cursor:pointer; width:25%; font-family:inherit; }
     .nav-item.active { color:#fff; }
     .nav-item.add-btn .add-icon { background:linear-gradient(135deg,var(--green),#059669); color:#fff; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin-top:-14px; border:3px solid var(--card); }
 
-    /* Telas / Abas */
     .view { position:absolute; inset:0; background:var(--bg); z-index:600; display:none; flex-direction:column; overflow-y:auto; padding:16px; }
     .view.active { display:flex; }
 
-    /* Catálogo e Sanfona */
     .catalog-card { background:var(--card); border:1px solid var(--line); border-radius:var(--r); margin-bottom:10px; overflow:hidden; }
     .card-head { padding:10px 14px; display:flex; align-items:center; gap:12px; }
     .photo-thumb { width:48px; height:48px; border-radius:12px; border:1px solid var(--line); background:var(--sub); overflow:hidden; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; font-size:1.2rem; }
@@ -59,14 +53,12 @@
     .addr-row:last-child { border-bottom:none; }
     .addr-row:active { background:var(--sub); }
 
-    /* Modais */
     .modal { position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); z-index:2000; display:none; align-items:flex-end; justify-content:center; }
     .modal.active { display:flex; }
     .sheet { background:var(--card); border:1px solid var(--line); width:100%; max-width:480px; border-radius:24px 24px 0 0; padding:16px 18px 24px; max-height:88vh; overflow-y:auto; }
     .sheet-title { font-size:1rem; font-weight:800; }
     .btn-close { background:var(--sub); border:1px solid var(--line); color:var(--muted); width:28px; height:28px; border-radius:50%; cursor:pointer; }
 
-    /* Formulários e Ações */
     .field { margin-bottom:11px; }
     .field label { display:block; font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:4px; }
     .input-box { width:100%; padding:9px 12px; border-radius:12px; border:1px solid var(--line); background:var(--sub); color:#fff; font-family:inherit; font-size:0.86rem; outline:none; }
@@ -92,7 +84,6 @@
     #toast { position:fixed; top:14px; left:50%; transform:translateX(-50%) translateY(-60px); background:#fff; color:#000; padding:6px 16px; border-radius:var(--pill); font-size:0.76rem; font-weight:700; z-index:3000; transition:0.25s; pointer-events:none; }
     #toast.show { transform:translateX(-50%) translateY(0); }
 
-    /* Visualizador de Foto */
     .photo-viewer-box { width:100%; height:260px; border-radius:16px; overflow:hidden; background:#000; border:1px solid var(--line); margin-bottom:12px; display:flex; align-items:center; justify-content:center; }
     .photo-viewer-box img { width:100%; height:100%; object-fit:contain; }
   </style>
@@ -126,9 +117,9 @@
 
     <div class="view" id="view-settings">
       <h3 style="margin-bottom:8px; font-size:1.1rem; font-weight:800;">Configurações</h3>
-      <p style="font-size:0.8rem; margin-bottom:14px;" class="text-muted">Os dados e fotos ficam salvos localmente neste dispositivo.</p>
+      <p id="cloud-status" style="font-size:0.8rem; margin-bottom:14px;" class="text-muted">Sincronização: Local (Configure o Firebase para Nuvem)</p>
       <button class="btn btn-sub" id="btn-export">📥 Fazer Backup (JSON)</button>
-      <button class="btn btn-del" id="btn-clear" style="margin-top:10px;">🗑️ Limpar Todos os Dados</button>
+      <button class="btn btn-del" id="btn-clear" style="margin-top:10px;">🗑️ Limpar Dados Locais</button>
     </div>
   </main>
 
@@ -139,7 +130,7 @@
     <button class="nav-item" data-target="settings"><span>⚙️</span><span>Ajustes</span></button>
   </nav>
 
-  <!-- FORMULÁRIO -->
+  <!-- FORMULÁRIO (SEM FOTO) -->
   <div class="modal" id="modal-form">
     <div class="sheet">
       <div class="flex-b" style="margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);">
@@ -240,7 +231,29 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <script>
+    // Cole aqui as chaves geradas no Firebase para ativar a nuvem compartilhada
+    const firebaseConfig = {
+      apiKey: "AIzaSyAG5AI6GgG4fPoP76Yhos2Xv2K3ATj6ob8",
+      authDomain: "mapa-das-folhas.firebaseapp.com",
+      projectId: "mapa-das-folhas",
+      storageBucket: "mapa-das-folhas.firebasestorage.app",
+      messagingSenderId: "848794491295",
+      appId: "1:848794491295:web:0f83a18f8e86461008c5aa"
+    };
+
+    const isCloudEnabled = Boolean(firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("COLE_AQUI"));
+    let db = null;
+    if (isCloudEnabled) {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+      } catch (e) { console.warn("Erro ao iniciar Firebase:", e); }
+    }
+
     const K_LOC = 'mapa_folhas_v1', K_FOTO = 'mapa_folhas_fotos_v1';
     let locations = JSON.parse(localStorage.getItem(K_LOC)) || [];
     let leafPhotos = JSON.parse(localStorage.getItem(K_FOTO)) || {};
@@ -249,13 +262,25 @@
     window.onload = () => {
       map = L.map('map', { zoomControl:false }).setView([-23.5505, -46.6333], 13);
       
-      // Camada de navegação moderna idêntica à referência
+      // Camada viária nítida idêntica à referência visual
       L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
         maxZoom: 20,
         subdomains: ['0', '1', '2', '3']
       }).addTo(map);
 
       markersLayer = L.layerGroup().addTo(map);
+
+      if (isCloudEnabled && db) {
+        document.getElementById('cloud-status').textContent = 'Sincronização: Nuvem Ativa (Compartilhado em tempo real)';
+        db.collection('plantas').onSnapshot(snap => {
+          locations = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          renderMap(); renderTotals(); renderCatalog();
+        });
+        db.collection('fotos').doc('catalogo').onSnapshot(doc => {
+          if (doc.exists) leafPhotos = doc.data() || {};
+          renderCatalog();
+        });
+      }
 
       document.getElementById('btn-gps').onclick = () => getGPS(true);
       document.getElementById('search-input').oninput = renderMap;
@@ -289,16 +314,16 @@
       };
 
       document.getElementById('btn-clear').onclick = () => {
-        if (confirm('Deseja apagar todos os dados e fotos?')) {
+        if (confirm('Deseja apagar todos os dados locais?')) {
           locations = []; leafPhotos = {};
           localStorage.removeItem(K_LOC); localStorage.removeItem(K_FOTO);
-          closeModals(); renderMap(); renderTotals(); renderCatalog(); toast('Dados apagados!');
+          closeModals(); renderMap(); renderTotals(); renderCatalog(); toast('Dados locais apagados!');
         }
       };
 
       document.getElementById('cat-photo-inp').onchange = saveCatalogPhoto;
 
-      getGPS(false); renderMap(); renderTotals();
+      getGPS(false); renderMap(); renderTotals(); renderCatalog();
     };
 
     function toast(m) {
@@ -408,7 +433,7 @@
       document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
     }
 
-    function saveData() {
+    async function saveData() {
       const name = document.getElementById('f-name').value.trim();
       let lat = parseFloat(document.getElementById('f-lat').value);
       let lng = parseFloat(document.getElementById('f-lng').value);
@@ -419,16 +444,23 @@
       if (isNaN(lat) || isNaN(lng)) { const c = map.getCenter(); lat = c.lat; lng = c.lng; }
 
       const street = detectedStreet || document.getElementById('f-address').value.trim() || `Rua sem nome (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+      const payload = { name, lat, lng, obs, street, type: curType };
 
-      if (id) {
-        const i = locations.findIndex(x => x.id === id);
-        if (i !== -1) locations[i] = { ...locations[i], name, lat, lng, obs, street, type: curType };
+      if (isCloudEnabled && db) {
+        if (id) await db.collection('plantas').doc(id).update(payload);
+        else await db.collection('plantas').add(payload);
       } else {
-        locations.push({ id:'f_' + Date.now(), name, lat, lng, obs, street, type: curType });
+        if (id) {
+          const i = locations.findIndex(x => x.id === id);
+          if (i !== -1) locations[i] = { ...locations[i], ...payload };
+        } else {
+          locations.push({ id:'f_' + Date.now(), ...payload });
+        }
+        localStorage.setItem(K_LOC, JSON.stringify(locations));
+        renderMap(); renderTotals(); renderCatalog();
       }
 
-      localStorage.setItem(K_LOC, JSON.stringify(locations));
-      closeModals(); renderMap(); renderTotals(); map.setView([lat, lng], 16); toast('Planta salva!');
+      closeModals(); map.setView([lat, lng], 16); toast('Planta salva!');
     }
 
     function renderMap() {
@@ -464,7 +496,6 @@
       document.getElementById('modal-details').classList.add('active');
     }
 
-    /* Foto no Catálogo: Ver ampliada ou Cadastrar */
     function handlePhotoClick(leafKey) {
       targetPhotoKey = leafKey.trim().toUpperCase();
       const photo = leafPhotos[targetPhotoKey];
@@ -482,10 +513,14 @@
       document.getElementById('cat-photo-inp').click();
     }
 
-    function removePhoto() {
+    async function removePhoto() {
       if (!targetPhotoKey || !confirm('Deseja remover a foto desta folha?')) return;
       delete leafPhotos[targetPhotoKey];
-      localStorage.setItem(K_FOTO, JSON.stringify(leafPhotos));
+      if (isCloudEnabled && db) {
+        await db.collection('fotos').doc('catalogo').set(leafPhotos);
+      } else {
+        localStorage.setItem(K_FOTO, JSON.stringify(leafPhotos));
+      }
       closeModals(); renderCatalog(); toast('Foto removida!');
     }
 
@@ -495,15 +530,20 @@
       const r = new FileReader();
       r.onload = ev => {
         const img = new Image();
-        img.onload = () => {
+        img.onload = async () => {
           const cvs = document.createElement('canvas');
-          let w = img.width, h = img.height, max = 500;
+          let w = img.width, h = img.height, max = 450;
           if (w > h && w > max) { h = Math.round((h * max) / w); w = max; }
           else if (h > max) { w = Math.round((w * max) / h); h = max; }
           cvs.width = w; cvs.height = h;
           cvs.getContext('2d').drawImage(img, 0, 0, w, h);
-          leafPhotos[targetPhotoKey] = cvs.toDataURL('image/jpeg', 0.7);
-          localStorage.setItem(K_FOTO, JSON.stringify(leafPhotos));
+          const base64 = cvs.toDataURL('image/jpeg', 0.65);
+          leafPhotos[targetPhotoKey] = base64;
+          if (isCloudEnabled && db) {
+            await db.collection('fotos').doc('catalogo').set({ [targetPhotoKey]: base64 }, { merge: true });
+          } else {
+            localStorage.setItem(K_FOTO, JSON.stringify(leafPhotos));
+          }
           renderCatalog(); toast('Foto atualizada!');
         };
         img.src = ev.target.result;
@@ -570,19 +610,29 @@
 
     function editDetail() { const it = curDetail; closeModals(); openForm(it); }
 
-    function deleteDetail() {
+    async function deleteDetail() {
       if (!curDetail || !confirm('Deseja excluir este registro?')) return;
-      locations = locations.filter(x => x.id !== curDetail.id);
-      localStorage.setItem(K_LOC, JSON.stringify(locations));
-      closeModals(); renderMap(); renderTotals(); renderCatalog(); toast('Excluído!');
+      if (isCloudEnabled && db) {
+        await db.collection('plantas').doc(curDetail.id).delete();
+      } else {
+        locations = locations.filter(x => x.id !== curDetail.id);
+        localStorage.setItem(K_LOC, JSON.stringify(locations));
+        renderMap(); renderTotals(); renderCatalog();
+      }
+      closeModals(); toast('Excluído!');
     }
 
-    function deleteForm() {
+    async function deleteForm() {
       const id = document.getElementById('f-id').value;
       if (!id || !confirm('Deseja excluir esta folha?')) return;
-      locations = locations.filter(x => x.id !== id);
-      localStorage.setItem(K_LOC, JSON.stringify(locations));
-      closeModals(); renderMap(); renderTotals(); renderCatalog(); toast('Excluído!');
+      if (isCloudEnabled && db) {
+        await db.collection('plantas').doc(id).delete();
+      } else {
+        locations = locations.filter(x => x.id !== id);
+        localStorage.setItem(K_LOC, JSON.stringify(locations));
+        renderMap(); renderTotals(); renderCatalog();
+      }
+      closeModals(); toast('Excluído!');
     }
 
     function openRoute() {
