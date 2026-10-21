@@ -223,7 +223,7 @@
     let curType = 'qualquer_horario', curDetail = null, activeFilter = 'all', detectedStreet = '', targetPhotoKey = null;
 
     window.onload = () => {
-      map = L.map('map', { zoomControl:false }).setView([-23.5505, -46.6333], 13);
+      map = L.map('map', { zoomControl:false, attributionControl:false }).setView([-23.5505, -46.6333], 13);
       L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom:20, subdomains:['0','1','2','3'] }).addTo(map);
       markersLayer = L.layerGroup().addTo(map);
 
